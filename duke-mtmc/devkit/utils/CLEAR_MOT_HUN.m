@@ -108,6 +108,7 @@ if ~N, return; end
 
 % mapping
 M=zeros(F,Ngt);
+M=sparse(M);
 
 mme=zeros(1,F); % ID Switchtes (mismatches)
 c=zeros(1,F);   % matches found
@@ -125,7 +126,7 @@ allfalsepos=zeros(F,N);
 
 for t=1:F
     g(t)=numel(find(gtInd(t,:)));
-    t
+    if ~mod(t,1000), fprintf('.'); end % print every 1000th frame
     % mapping for current frame
     if t>1
         mappings=find(M(t-1,:));
@@ -136,8 +137,13 @@ for t=1:F
         end
     end
     
+    stIndInT = find(stInd(t,:));
     GTsNotMapped=find(~M(t,:) & gtInd(t,:));
-    EsNotMapped=setdiff(find(stInd(t,:)),M(t,:));
+    EsNotMapped=stIndInT;
+    if ~isempty(stIndInT) && any(M(t,:))
+        EsNotMapped=setdiff(stIndInT,M(t,:));
+    end
+    
 
     % reshape to ensure horizontal vector in empty case
 	EsNotMapped=reshape(EsNotMapped,1,length(EsNotMapped));
@@ -158,7 +164,7 @@ for t=1:F
         
         tmpai=alldist;        
         tmpai(tmpai>td)=Inf;
-        [Mtch,Cst]=Hungarian(tmpai);
+        [Mtch,~]=Hungarian(tmpai);
         [u,v]=find(Mtch);
         
         for mmm=1:length(u)
@@ -187,32 +193,38 @@ for t=1:F
 %         end
     
     else
-        allisects=zeros(Ngt,N);        maxisect=Inf;
-        
-        for o=GTsNotMapped
-            GT=[gtInfo.X(t,o)-gtInfo.W(t,o)/2 ...
-                gtInfo.Y(t,o)-gtInfo.H(t,o) ...
-                gtInfo.W(t,o) gtInfo.H(t,o) ];
-            for e=EsNotMapped
-                E=[stateInfo.Xi(t,e)-stateInfo.W(t,e)/2 ...
-                    stateInfo.Yi(t,e)-stateInfo.H(t,e) ...
-                    stateInfo.W(t,e) stateInfo.H(t,e) ];
-                allisects(o,e)=boxiou(GT(1),GT(2),GT(3),GT(4),E(1),E(2),E(3),E(4));
+        % do Hungarian matching only if there is anything to match
+        if ~isempty(GTsNotMapped) && ~isempty(EsNotMapped)
+            allisects=zeros(Ngt,N);        maxisect=Inf;
+
+            for o=GTsNotMapped
+                GT=[gtInfo.X(t,o)-gtInfo.W(t,o)/2 ...
+                    gtInfo.Y(t,o)-gtInfo.H(t,o) ...
+                    gtInfo.W(t,o) gtInfo.H(t,o) ];
+                for e=EsNotMapped
+                    E=[stateInfo.Xi(t,e)-stateInfo.W(t,e)/2 ...
+                        stateInfo.Yi(t,e)-stateInfo.H(t,e) ...
+                        stateInfo.W(t,e) stateInfo.H(t,e) ];
+                    allisects(o,e)=boxiou(GT(1),GT(2),GT(3),GT(4),E(1),E(2),E(3),E(4));
+                end
+            end
+
+
+            tmpai=allisects;
+            tmpai=1-tmpai;
+            tmpai(tmpai>td)=Inf;
+            
+            % do Hungarian matching only if there is anything to match
+            if numel(find(~isinf(tmpai)))>0
+                [Mtch,~]=Hungarian(tmpai);
+        %         [Mtch2, ~] = assignmentoptimal(tmpai);
+                [u,v]=find(Mtch);
+
+                for mmm=1:length(u)
+                    M(t,u(mmm))=v(mmm);
+                end
             end
         end
-            
-        
-        tmpai=allisects;
-        tmpai=1-tmpai;
-        tmpai(tmpai>td)=Inf;
-        [Mtch,Cst]=Hungarian(tmpai);
-        [u,v]=find(Mtch);
-        
-        M=M;
-        for mmm=1:length(u)
-            M(t,u(mmm))=v(mmm);
-        end
-        
 %         GTsNotMapped=find(~M(t,:) & gtInd(t,:));
 %         EsNotMapped=setdiff(find(stInd(t,:)),M(t,:));
             
@@ -247,8 +259,15 @@ for t=1:F
     
     
     alltrackers=find(stInd(t,:));
-    mappedtrackers=intersect(M(t,find(M(t,:))),alltrackers);
-    falsepositives=setdiff(alltrackers,mappedtrackers);
+    mappedtrackers = [];
+    if ~isempty(alltrackers) && any(M(t,curtracked))
+        mappedtrackers=intersect(M(t,curtracked),alltrackers);
+    end
+    
+    falsepositives=alltrackers;
+    if ~isempty(falsepositives) && ~isempty(mappedtrackers) && any(mappedtrackers)
+        falsepositives=setdiff(alltrackers,mappedtrackers);
+    end
     
     alltracked(t,:)=M(t,:);
 %     allfalsepos(t,1:length(falsepositives))=falsepositives;
@@ -288,6 +307,7 @@ for t=1:F
     
     
 end    
+fprintf('\n');
 
 missed=sum(m);
 falsepositives=sum(fp);

@@ -49,7 +49,7 @@ resMat = resMat(keep,:);
 
 % Single-Cam
 for camera = 1:8
-    
+    fprintf('Processing camera %d...\n',camera);
     resMatSingle = resMat(resMat(:,1)==camera, 2:9);
     gtMatSingle = gtMat(gtMat(:,1)==camera, 2:9);
     [IDP, IDR, IDF1] = IDmeasures(resMatSingle, gtMatSingle, iou_threshold, world);
@@ -63,7 +63,7 @@ for camera = 1:8
 
     
 end
-
+fprintf('\n');
 
 
 % Multi-Cam

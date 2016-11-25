@@ -19,7 +19,7 @@ imCoord=1;
 % go through all lines
 for l=1:numLines
    
-    [l, numLines]
+    if ~mod(l,10000), fprintf('.'); end % print each 10,000th line
     lineData=allData(l,:);
 
     % ignore 0-marked GT
@@ -35,9 +35,8 @@ for l=1:numLines
     stInfo.H(fr,id) = lineData(6);
     stInfo.Xi(fr,id) = lineData(3) + stInfo.W(fr,id)/2;
     stInfo.Yi(fr,id) = lineData(4) + stInfo.H(fr,id);
-    
-   
 end
+fprintf('\n');
 
 % append empty frames?
 if nargin>1
@@ -84,4 +83,20 @@ if isfield(stInfo,'Xi')
     stInfo.Yi=stInfo.Yi(:,nzc); 
     stInfo.W=stInfo.W(:,nzc);
     stInfo.H=stInfo.H(:,nzc);
+end
+
+% do sparse matrices
+if isfield(stInfo,'X')
+    stInfo.X=sparse(stInfo.X);
+    stInfo.Y=sparse(stInfo.Y);
+end
+if isfield(stInfo,'Xgp')
+    stInfo.Xgp=sparse(stInfo.Xgp);    
+    stInfo.Ygp=sparse(stInfo.Ygp);    
+end
+if isfield(stInfo,'Xi')
+    stInfo.Xi=sparse(stInfo.Xi);
+    stInfo.Yi=sparse(stInfo.Yi);
+    stInfo.W=sparse(stInfo.W);
+    stInfo.H=sparse(stInfo.H);
 end

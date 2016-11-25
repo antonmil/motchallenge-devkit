@@ -1,10 +1,11 @@
-addpath('devkit');
+% addpath(genpath('devkit'));
 
-trackerOutput = dlmread('res/baseline.txt');
+% trackerOutput = dlmread('res/baseline.txt');
 
 world = false; % Image plane
 iou_threshold = 0.5;
 testSets = {'easy', 'hard'};  % 'trainval'
+testSets = {'easy'};
 
 % Evaluate
 for i = 1:length(testSets)

@@ -52,7 +52,9 @@ trackerData(:,2) = trackerData(:,2) - frameRange(1) + 1;
 trackerData(:,1) = ic2;
 trackerData = sortrows(trackerData, [-2 -1]);
 
+fprintf('Reading ground truth...');
 gtI = convertTXTToStruct(groundTruth);
+fprintf('done!\n');
 
 [Fgt,Ngt] = size(gtInfo.X);
 [FgtI,NgtI] = size(gtI.Xi);
@@ -116,8 +118,9 @@ seqCnt=seqCnt+1;
 
 %fprintf('\t... %s\n',seqName);
 
-
+fprintf('Reading result...');
 stI = convertTXTToStruct(trackerData, gtInfo.frameNums);
+fprintf('Done!\n');
 %     stI.Xi(find(stI.Xi(:)))=-1;
 % check if bounding boxes available in solution
 imCoord=1;
@@ -151,6 +154,8 @@ if FI<allFgt(seqCnt)
 end
 
 % get result for one sequence only
+
+fprintf('Computing CLEAR with %d targets and %d frames\n',NI,FI);
 [mets, mInf]=CLEAR_MOT_HUN(gtInfoSingle(seqCnt).gtInfo,stI);
 
 allMets(mcnt).mets2d(seqCnt).name=seqName;
