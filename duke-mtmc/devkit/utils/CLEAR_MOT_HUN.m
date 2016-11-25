@@ -194,6 +194,12 @@ for t=1:F
     
     else
         % do Hungarian matching only if there is anything to match
+%         u = linspace(1,N,N); v=u;
+%         for mmm=1:length(u)
+%             M(t,u(mmm))=v(mmm);
+%         end
+%         M(t,:)=linspace(1,N,N);
+                
         if ~isempty(GTsNotMapped) && ~isempty(EsNotMapped)
             allisects=zeros(Ngt,N);        maxisect=Inf;
 
