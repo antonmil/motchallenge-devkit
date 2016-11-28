@@ -12,9 +12,14 @@ elseif strcmp(testSet,'hard')
     testInterval = [227541:263503];
 elseif strcmp(testSet,'trainval')
     load('gt/trainval.mat');
-    gtMat = trainDataClipped;
-    testInterval = [47720:227540]; % takes too long, use smaller interval
+    gtMat = trainData;
+    testInterval = [47720:227540]; % takes too long
+elseif strcmp(testSet,'trainval_mini') % shorter version of trainval
+    load('gt/trainval.mat');
+    gtMat = trainData;
+    testInterval = [127720:187540]; 
 else
+    
     fprintf('Unknown test set %s\n',testSet);
     return;
 end
