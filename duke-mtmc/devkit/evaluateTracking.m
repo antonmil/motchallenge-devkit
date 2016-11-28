@@ -52,6 +52,11 @@ trackerData(:,2) = trackerData(:,2) - frameRange(1) + 1;
 trackerData(:,1) = ic2;
 trackerData = sortrows(trackerData, [-2 -1]);
 
+% Clip frames outside of range
+frameRange = frameRange - frameRange(1) + 1;
+groundTruth(~ismember(groundTruth(:,2),[frameRange(1):frameRange(end)]),:) = [];
+trackerData(~ismember(trackerData(:,2),[frameRange(1):frameRange(end)]),:) = [];
+
 fprintf('Reading ground truth...');
 gtI = convertTXTToStruct(groundTruth);
 fprintf('done!\n');
