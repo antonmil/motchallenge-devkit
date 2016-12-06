@@ -7,7 +7,7 @@
 % Ergys Ristani 
 % Duke University 2016
 
-function [IDPrecision, IDRecall, IDF1] = IDmeasures( predictionMat, groundTruthMat, threshold, world )
+function [measures] = IDmeasures( predictionMat, groundTruthMat, threshold, world )
 % Input: 
 %    predictionMat    - ID, frame, left, top, width, height, worldX, worldY
 %    groundTruthMat   - ID, frame, left, top, width, height, worldX, worldY
@@ -82,8 +82,13 @@ IDPrecision = IDTP / (IDTP + IDFP);
 IDRecall = IDTP / (IDTP + IDFN);
 IDF1 = 2*IDTP/(numGT + numPRED);
 
-IDPrecision = IDPrecision * 100;
-IDRecall = IDRecall * 100;
-IDF1 = IDF1 * 100;
+measures.IDP = IDPrecision * 100;
+measures.IDR = IDRecall * 100;
+measures.IDF1 = IDF1 * 100;
+measures.numGT = numGT;
+measures.numPRED = numPRED;
+measures.IDTP = IDTP;
+measures.IDFP = IDFP;
+measures.IDFN = IDFN;
 
 

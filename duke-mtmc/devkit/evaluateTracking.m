@@ -167,10 +167,11 @@ end
 % get result for one sequence only
 
 fprintf('Computing CLEAR with %d targets and %d frames\n',NI,FI);
-[mets, mInf]=CLEAR_MOT_HUN(gtInfoSingle(seqCnt).gtInfo,stI);
+[mets, mInf, additionalInfo]=CLEAR_MOT_HUN(gtInfoSingle(seqCnt).gtInfo,stI);
 
 allMets(mcnt).mets2d(seqCnt).name=seqName;
 allMets(mcnt).mets2d(seqCnt).m=mets;
+allMets(mcnt).mets2d(seqCnt).additionalInfo = additionalInfo;
 
 allMets(mcnt).mets3d(seqCnt).name=seqName;
 allMets(mcnt).mets3d(seqCnt).m=zeros(1,length(mets));

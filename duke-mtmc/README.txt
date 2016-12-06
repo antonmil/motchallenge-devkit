@@ -28,7 +28,7 @@ This is what you should expect from the script:
 Test set: trainval_mini
 Single-all
  IDF1  IDP  IDR| Rcll  Prcn   FAR  GT| MT  PT  ML    FP|   FN  IDs   FM  MOTA|  MOTP MOTAL 
- 75.0 85.5 66.8| 74.7  95.7  0.38 1489|912 481  96 40514|301148  416 1301  71.3|  76.7  71.3 
+ 75.0 85.5 66.8| 74.7  95.6  0.09 1489|912 481  96 40726|301360  378 1277  71.3|  76.7  71.3 
 Multi-cam	IDF1: 54.98	IDP: 62.67	IDR: 48.97
 
 Cam_1

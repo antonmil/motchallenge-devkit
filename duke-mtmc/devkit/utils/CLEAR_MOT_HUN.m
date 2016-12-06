@@ -364,6 +364,19 @@ metrics=[recall, precision, FAR, Ngt, MT, PT, ML, falsepositives, missed, idswit
 
 additionalInfo.alltracked=alltracked;
 additionalInfo.allfalsepos=allfalsepos;
+additionalInfo.m = m;
+additionalInfo.fp = fp;
+additionalInfo.mme = mme;
+additionalInfo.g = g;
+additionalInfo.c = c;
+additionalInfo.Fgt = Fgt;
+additionalInfo.Ngt = Ngt;
+additionalInfo.ious = ious;
+additionalInfo.td = td;
+additionalInfo.MT = MT;
+additionalInfo.PT = PT;
+additionalInfo.ML = ML;
+additionalInfo.FRA = FRA;
 end 
 
 

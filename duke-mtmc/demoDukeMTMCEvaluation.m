@@ -25,8 +25,8 @@ trackerOutput = dlmread('res/baseline.txt');
 
 world = false; % Image plane
 iou_threshold = 0.5;
-% testSets = {'trainval'}; % 
-testSets = {'trainval_mini'};
+% testSets = {'trainval'}; 
+testSets = {'trainval_mini'}; 
 
 
 % Evaluate
@@ -51,9 +51,9 @@ for i = 1:length(testSets)
     % Multi-cam
     k = 10;    
     fprintf(result{k}.description);
-    fprintf('\tIDF1: %.2f', result{k}.IDF1);
-    fprintf('\tIDP: %.2f', result{k}.IDP);
-    fprintf('\tIDR: %.2f\n', result{k}.IDR);
+    fprintf('\tIDF1: %.2f', result{k}.IDmeasures.IDF1);
+    fprintf('\tIDP: %.2f', result{k}.IDmeasures.IDP);
+    fprintf('\tIDR: %.2f\n', result{k}.IDmeasures.IDR);
     
     % All individual cameras
     fprintf('\n'); 
