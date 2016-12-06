@@ -90,8 +90,16 @@ result{10}.description = 'Multi-cam';
 % AllCameraSingle (MC Upper bound) 
 gtMatSingleAll = gtMat(:,2:9);
 resMatSingleAll = resMat(:,2:9);
+
 gtMatSingleAll(:,1) = gtMatSingleAll(:,1) + gtMat(:,1)*SHIFT_CONSTANT; % ID + cam*1000000 for ID uniqueness
 resMatSingleAll(:,1) = resMatSingleAll(:,1) + resMat(:,1)*SHIFT_CONSTANT;
+
+for cam = 1:8 % frame uniqueness
+    gtMatSingleAll(gtMat(:,1)==cam,2) = gtMatSingleAll(gtMat(:,1)==cam,2) + (cam-1) * numel(testInterval);
+    resMatSingleAll(resMat(:,1)==cam,2)  = resMatSingleAll(resMat(:,1)==cam,2) + (cam-1) * numel(testInterval);
+end
+% gtMatSingleAll(:,2) = gtMatSingleAll(:,2) + gtMat(:,1)*SHIFT_CONSTANT; % frame + cam*1000000 for frame uniqueness
+% resMatSingleAll(:,2) = resMatSingleAll(:,2) + resMat(:,1)*SHIFT_CONSTANT;
 
 [IDP, IDR, IDF1] = IDmeasures(resMatSingleAll, gtMatSingleAll, iou_threshold, world);
 result{9}.IDP= IDP;

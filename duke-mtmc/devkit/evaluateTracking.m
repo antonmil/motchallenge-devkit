@@ -39,23 +39,29 @@ seqName = s;
 
 %gtFile = fullfile(dataDir,seqName,'gt','gt.txt');
 
-% reduce frame numbers to make the computation faster/feasible
-frameRange = [min(groundTruth(:,2)), max(groundTruth(:,2))];
 
-groundTruth(:,2) = groundTruth(:,2) - frameRange(1) + 1;
-[~,~,ic] = unique(groundTruth(:,1));
-groundTruth(:,1) = ic;
-groundTruth = sortrows(groundTruth, [-2 -1]);
+% Normalize frames to 1:maxGTFrame
+mini = min(groundTruth(:,2));
+trackerData(:,2) = trackerData(:,2) - mini  + 1;
+groundTruth(:,2) = groundTruth(:,2) - mini + 1;
 
-trackerData(:,2) = trackerData(:,2) - frameRange(1) + 1;
+% Reduce frame numbers to make the computation faster/feasible
+gtFrames = [min(groundTruth(:,2)): max(groundTruth(:,2))];
+gtFrames = gtFrames - gtFrames(1) + 1;
+
+% Normalize IDs
+[~,~,ic1] = unique(groundTruth(:,1));
+groundTruth(:,1) = ic1;
 [~,~,ic2] = unique(trackerData(:,1));
 trackerData(:,1) = ic2;
-trackerData = sortrows(trackerData, [-2 -1]);
 
 % Clip frames outside of range
-frameRange = frameRange - frameRange(1) + 1;
-groundTruth(~ismember(groundTruth(:,2),[frameRange(1):frameRange(end)]),:) = [];
-trackerData(~ismember(trackerData(:,2),[frameRange(1):frameRange(end)]),:) = [];
+groundTruth(~ismember(groundTruth(:,2),gtFrames),:) = [];
+trackerData(~ismember(trackerData(:,2),gtFrames),:) = [];
+
+groundTruth = sortrows(groundTruth, [-2 -1]);
+trackerData = sortrows(trackerData, [-2 -1]);
+
 
 fprintf('Reading ground truth...');
 gtI = convertTXTToStruct(groundTruth);
