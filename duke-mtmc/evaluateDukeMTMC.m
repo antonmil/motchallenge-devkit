@@ -26,19 +26,11 @@ end
 
 
 
-% Change frames to global time
-startTimes = [5543, 3607, 27244, 31182, 1, 22402, 18968, 46766];
-frames = resMat(:,3);
-for cam = 1:8
-    frames(resMat(:,1)==cam) = frames(resMat(:,1)==cam) + startTimes(cam) - 1;
-end
-
-
 % Filter rows by frame interval
-resMat = resMat(ismember(frames, testInterval),:);
-
+startTimes = [5543, 3607, 27244, 31182, 1, 22402, 18968, 46766];
 for cam = 1:8
     gtMat(gtMat(:,1) == cam & ~ismember(gtMat(:,3) + startTimes(cam) - 1, testInterval),:) = [];
+    resMat(resMat(:,1) == cam & ~ismember(resMat(:,3) + startTimes(cam) - 1, testInterval),:) = [];
 end
 
 % Filter rows by feet position within ROI
@@ -55,8 +47,8 @@ resMat = resMat(keep,:);
 % Single-Cam
 for camera = 1:8
     fprintf('Processing camera %d...\n',camera);
-    resMatSingle = resMat(resMat(:,1)==camera, 2:9);
-    gtMatSingle = gtMat(gtMat(:,1)==camera, 2:9);
+    resMatSingle = resMat(resMat(:,1)==camera, 2:7);
+    gtMatSingle = gtMat(gtMat(:,1)==camera, 2:7);
     measures = IDmeasures(resMatSingle, gtMatSingle, iou_threshold, world);
     result{camera}.IDmeasures = measures;
     result{camera}.description = sprintf('Cam_%d',camera);
@@ -74,16 +66,16 @@ fprintf('\n');
 % ID, frame, left, top, width, height, worldX, worldY
 SHIFT_CONSTANT = 100000000;
 
-gtMatMulti  = gtMat(:,2:9);
-resMatMulti = resMat(:,2:9);
+gtMatMulti  = gtMat(:,2:7);
+resMatMulti = resMat(:,2:7);
 gtMatMulti(:,2) = gtMat(:,3) + gtMat(:,1)*SHIFT_CONSTANT; % frame + cam*1000000 for frame uniqueness
 resMatMulti(:,2) = resMat(:,3) + resMat(:,1)*SHIFT_CONSTANT; 
 result{10}.IDmeasures = IDmeasures(resMatMulti, gtMatMulti, iou_threshold, world);
 result{10}.description = 'Multi-cam';
 
 % AllCameraSingle (MC Upper bound) 
-gtMatSingleAll = gtMat(:,2:9);
-resMatSingleAll = resMat(:,2:9);
+gtMatSingleAll = gtMat(:,2:7);
+resMatSingleAll = resMat(:,2:7);
 
 gtMatSingleAll(:,1) = gtMatSingleAll(:,1) + gtMat(:,1)*SHIFT_CONSTANT; % ID + cam*1000000 for ID uniqueness
 resMatSingleAll(:,1) = resMatSingleAll(:,1) + resMat(:,1)*SHIFT_CONSTANT;

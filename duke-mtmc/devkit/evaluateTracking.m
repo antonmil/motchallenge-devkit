@@ -46,8 +46,7 @@ trackerData(:,2) = trackerData(:,2) - mini  + 1;
 groundTruth(:,2) = groundTruth(:,2) - mini + 1;
 
 % Reduce frame numbers to make the computation faster/feasible
-gtFrames = [min(groundTruth(:,2)): max(groundTruth(:,2))];
-gtFrames = gtFrames - gtFrames(1) + 1;
+gtFrames = [1: max(groundTruth(:,2))];
 
 % Normalize IDs
 [~,~,ic1] = unique(groundTruth(:,1));
