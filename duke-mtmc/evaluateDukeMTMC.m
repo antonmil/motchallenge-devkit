@@ -42,7 +42,11 @@ for cam = 1:8
 end
 
 resMat = resMat(keep,:);
-    
+ 
+if isempty(resMat)
+   result = [];
+   return
+end
 
 % Single-Cam
 for camera = 1:8

@@ -44,6 +44,12 @@ for i = 1:length(testSets)
     result = results{i};
     fprintf('\n-------Results-------\n');
     fprintf('Test set: %s\n', testSets{i});
+    
+    if isempty(result)
+        fprintf('No input data found\n');
+        continue;
+    end
+    
     % Single cameras all
     fprintf('%s\n',result{9}.description);
     printMetrics(result{9}.allMets.mets2d.m); 
