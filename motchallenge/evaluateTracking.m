@@ -30,6 +30,8 @@ allFgt=zeros(1,length(allSeq));
 % Find out the length of each sequence
 % and concatenate ground truth
 gtInfoSingle=[];
+gtMat = [];
+predMat = [];
 seqCnt=0;
 for s=allSeq
     seqCnt=seqCnt+1;
@@ -40,6 +42,8 @@ for s=allSeq
     
     gtFile = fullfile(dataDir,seqName,'gt','gt.txt');
     gtI = convertTXTToStruct(gtFile,seqFolder);
+    gtMat{seqCnt} = dlmread(gtFile);
+    gtMat{seqCnt}(:,[1 2 7 8]) = gtMat{seqCnt}(:,[2 1 8 9]); 
     
     [Fgt,Ngt] = size(gtInfo.X);
     [FgtI,NgtI] = size(gtI.Xi);
@@ -75,6 +79,9 @@ for s=allSeq
     
     gtInfoSingle(seqCnt).gtInfo=gtI;
     
+    
+    
+    
 end
 gtInfo.frameNums=1:size(gtInfo.Xi,1);
 
@@ -99,6 +106,7 @@ eval3D=1;
 seqCnt=0;
 
 % iterate over each sequence
+predMat = [];
 for s=allSeq
     
     seqCnt=seqCnt+1;
@@ -121,7 +129,8 @@ for s=allSeq
     end
 
     
-    
+    predMat{seqCnt} = dlmread(resFile);
+    predMat{seqCnt}(:,[1 2 7 8]) = predMat{seqCnt}(:,[2 1 8 9]);
     stI = convertTXTToStruct(resFile);
 %     stI.Xi(find(stI.Xi(:)))=-1;
     % check if bounding boxes available in solution
@@ -170,6 +179,11 @@ for s=allSeq
     % get result for one sequence only
     [mets, mInf]=CLEAR_MOT_HUN(gtInfoSingle(seqCnt).gtInfo,stI);
     
+    threshold = 0.5;
+    world = ~imCoord;
+    metsID = IDmeasures(predMat{seqCnt}, gtMat{seqCnt}, threshold, world);
+    mets = [metsID.IDF1, metsID.IDP, metsID.IDR, mets];
+   
     allMets(mcnt).mets2d(seqCnt).name=seqName;
     allMets(mcnt).mets2d(seqCnt).m=mets;
     
@@ -187,7 +201,12 @@ for s=allSeq
     if  gtInfoSingle(seqCnt).wc &&  worldCoordST
         evopt.eval3d=1;evopt.td=1;
         [mets, mInf]=CLEAR_MOT_HUN(gtInfoSingle(seqCnt).gtInfo,stI,evopt);
-            allMets(mcnt).mets3d(seqCnt).m=mets;
+        world = true;
+        metsID = IDmeasures(predMat{seqCnt}, gtMat{seqCnt}, threshold, world);
+        mets = [metsID.IDF1, metsID.IDP, metsID.IDR, mets];
+
+        
+        allMets(mcnt).mets3d(seqCnt).m=mets;
                 
         fprintf('*** 3D (in world coordinates) ***\n'); printMetrics(mets); fprintf('\n');            
     else
@@ -215,11 +234,27 @@ for s=allSeq
 end
 stInfo.frameNums=1:size(stInfo.Xi,1);
 
+% Prepare data for ID measures for overall evaluation
+gtMatAll = [];
+predMatAll = [];
+count = 0;
+for k = 1:length(gtMat)
+   gtMat{k}(:,2) = gtMat{k}(:,2) + count;
+   predMat{k}(:,2) = predMat{k}(:,2) + count;
+   count = count + max(gtMat{k}(:,2));
+   gtMatAll = [gtMatAll; gtMat{k}]; 
+   predMatAll = [predMatAll; predMat{k}];
+end
+
+
 if eval2D
     fprintf('\n');
     fprintf(' ********************* Your Benchmark Results (2D) ***********************\n');
 
     [m2d, mInf]=CLEAR_MOT_HUN(gtInfo,stInfo);
+    metsID = IDmeasures(predMatAll, gtMatAll, 0.5, false);
+    m2d = [metsID.IDF1, metsID.IDP, metsID.IDR, m2d];
+
     allMets.bmark2d=m2d;
     
     evalFile = fullfile(resDir, 'eval2D.txt');
@@ -235,6 +270,10 @@ if eval3D
     evopt.eval3d=1;evopt.td=1;
        
     [m3d, mInf]=CLEAR_MOT_HUN(gtInfo,stInfo,evopt);
+    metsID = IDmeasures(predMatAll, gtMatAll, evopt.td, evopt.eval3d);
+    m3d = [metsID.IDF1, metsID.IDP, metsID.IDR, m3d];
+
+    
     allMets.bmark3d=m3d;
     
     evalFile = fullfile(resDir, 'eval3D.txt');
