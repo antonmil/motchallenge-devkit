@@ -324,6 +324,7 @@ if options.eval3d
 else
     MOTP=sum(ious(ious>=td & ious<Inf))/sum(c) * 100; % avg ol
 end
+if isnan(MOTP), MOTP=0; end % force to 0 if no matches found
 
 MOTAL=(1-((sum(m)+sum(fp)+log10(sum(mme)+1))/sum(g)))*100;
 MOTA=(1-((sum(m)+sum(fp)+(sum(mme)))/sum(g)))*100;
