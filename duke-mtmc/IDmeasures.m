@@ -19,8 +19,8 @@ function [measures] = IDmeasures( predictionMat, groundTruthMat, threshold, worl
 % data for one identity.
 idsPred = unique(predictionMat(:,1));
 idsGT = unique(groundTruthMat(:,1));
-ground_truth = cell(length(idsGT),1);% gt_cam = cell(length(idsGT),1);
-prediction = cell(length(idsPred),1);% pr_cam = cell(length(idsPred),1);
+ground_truth = cell(length(idsGT),1);
+prediction = cell(length(idsPred),1);
 for i = 1:length(idsGT)
    ground_truth{i} = groundTruthMat(groundTruthMat(:,1) == idsGT(i),:);
 end

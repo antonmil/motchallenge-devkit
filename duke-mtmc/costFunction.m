@@ -4,7 +4,11 @@ frames_gt   = tr1(:,2);
 frames_pred = tr2(:,2);
 
 % If trajectories don't overlap in time then return cost or inf
-overlapTest = sum(ismember(frames_gt,frames_pred)) > 0;
+overlapTest = (frames_gt(1) >= frames_pred(1) && frames_gt(1) < frames_pred(end)) || ...
+              (frames_gt(end) >= frames_pred(1) && frames_gt(end) <= frames_pred(end)) || ...
+              (frames_pred(1) >= frames_gt(1) && frames_pred(1) <= frames_gt(end)) || ...
+              (frames_pred(end) >= frames_gt(1) && frames_pred(end) <= frames_gt(end));
+
 if ~overlapTest
     fp = length(frames_pred);
     fn = length(frames_gt);
@@ -12,37 +16,35 @@ if ~overlapTest
     return;
 end
 
-[isfoundGT, posGT]   = ismember(frames_gt, frames_pred);
-[isfoundPred, posPred] = ismember(frames_pred, frames_gt);
+[isfoundGT, posGT]   = ismember_mex(frames_gt, frames_pred);
+[isfoundPred, posPred] = ismember_mex(frames_pred, frames_gt);
 
 % Use points at infinity when no match exists
 columns = [7,8];
-coeff = inf;
 if ~world
     columns = [3 4 5 6];
-    % Use empty bounding box when no match exists
-    coeff = 0;
 end
 
 % Ground truth data and the corresponding data from the prediction
-pointsGT = tr1(:, columns);
-pointsGTPred = coeff*ones(size(pointsGT));
-pointsGTPred(isfoundGT,:) = tr2(posGT(isfoundGT),columns);
+pointsGT = tr1(isfoundGT, columns);
+pointsGTPred = tr2(posGT(isfoundGT),columns);
 
 % Prediction data and the corresponding data from ground truth
-pointsPred = tr2(:, columns);
-pointsPredGT = coeff*ones(size(pointsPred));
-pointsPredGT(isfoundPred,:) = tr1(posPred(isfoundPred),columns);
+pointsPred = tr2(isfoundPred, columns);
+pointsPredGT = tr1(posPred(isfoundPred),columns);
+
+unmatchedGT = sum(isfoundGT==0);
+unmatchedPred = sum(isfoundPred==0);
 
 distanceGTvsPred = distanceFunction(pointsGT, pointsGTPred, world);
 distancePredvsGT = distanceFunction(pointsPred, pointsPredGT, world);
 
 if world % Euclidean distance test
-    fn = sum( distanceGTvsPred > THRESHOLD );
-    fp = sum( distancePredvsGT > THRESHOLD );
+    fn = unmatchedGT + sum( distanceGTvsPred > THRESHOLD );
+    fp = unmatchedPred + sum( distancePredvsGT > THRESHOLD );
 else % IntersectionOverUnion test
-    fn = sum( distanceGTvsPred < THRESHOLD );
-    fp = sum( distancePredvsGT < THRESHOLD );
+    fn = unmatchedGT + sum( distanceGTvsPred < THRESHOLD );
+    fp = unmatchedPred + sum( distancePredvsGT < THRESHOLD );
 end
 cost = fp + fn;
 
