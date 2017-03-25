@@ -75,5 +75,8 @@ The results will be computed for each individual camera (Cam_1-8), for all singl
 Version history
 ===============
 
+1.01 - Mar 25, 2017
+  - performance enhacements
+
 1.00 - Nov 28, 2016
   - initial release

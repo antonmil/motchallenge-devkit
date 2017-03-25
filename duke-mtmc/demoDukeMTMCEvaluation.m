@@ -1,6 +1,11 @@
-%% Fetching data
+%% Compile
 
-mex assignmentoptimal.c
+mex devkit/utils/assignmentoptimal.c -outdir devkit/utils
+mex devkit/utils/clearMOTMex.cpp -outdir devkit/utils
+mex devkit/utils/costBlockMex.cpp -outdir devkit/utils COMPFLAGS="/openmp $COMPFLAGS"
+
+
+%% Fetching data
 
 % Fetching data
 if ~exist('gt/trainval.mat','file')

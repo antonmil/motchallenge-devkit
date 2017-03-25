@@ -16,8 +16,8 @@ if ~overlapTest
     return;
 end
 
-[isfoundGT, posGT]   = ismember_mex(frames_gt, frames_pred);
-[isfoundPred, posPred] = ismember_mex(frames_pred, frames_gt);
+[isfoundGT, posGT]   = ismember(frames_gt, frames_pred);
+[isfoundPred, posPred] = ismember(frames_pred, frames_gt);
 
 % Use points at infinity when no match exists
 columns = [7,8];
