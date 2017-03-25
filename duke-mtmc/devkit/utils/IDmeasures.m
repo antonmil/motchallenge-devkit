@@ -37,11 +37,15 @@ fp = zeros(size(cost));
 fn = zeros(size(cost));
 
 % Compute cost block
-for i = 1:length(ground_truth)
-    for j = 1:length(prediction)
-        [cost(i,j), fp(i,j), fn(i,j)] = costFunction(ground_truth{i}, prediction{j}, threshold, world);
-    end
-end
+[costBlock, fpBlock, fnBlock] = costBlockMex(ground_truth, prediction, threshold, world);
+% for i = 1:length(ground_truth)
+%     for j = 1:length(prediction)
+%         [cost(i,j), fp(i,j), fn(i,j)] = costFunction(ground_truth{i}, prediction{j}, threshold, world);
+%     end
+% end
+cost(1:size(costBlock,1),1:size(costBlock,2)) = costBlock;
+fp(1:size(costBlock,1),1:size(costBlock,2)) = fpBlock;
+fn(1:size(costBlock,1),1:size(costBlock,2)) = fnBlock;
 
 % Compute FP block
 for i = 1:length(prediction)
