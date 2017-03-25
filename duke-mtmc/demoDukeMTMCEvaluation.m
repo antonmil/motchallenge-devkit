@@ -1,8 +1,6 @@
-mex devkit/utils/assignmentoptimal.c -outdir devkit/utils
-mex devkit/utils/clearMOTMex.cpp -outdir devkit/utils
-mex devkit/utils/costBlockMex.cpp -outdir devkit/utils
-
 %% Fetching data
+
+mex assignmentoptimal.c
 
 % Fetching data
 if ~exist('gt/trainval.mat','file')
