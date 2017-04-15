@@ -83,6 +83,7 @@ IDTP = numGT - IDFN;
 assert(IDTP == numPRED - IDFP);
 
 IDPrecision = IDTP / (IDTP + IDFP);
+if numPRED == 0, IDPrecision = 0; end
 IDRecall = IDTP / (IDTP + IDFN);
 IDF1 = 2*IDTP/(numGT + numPRED);
 

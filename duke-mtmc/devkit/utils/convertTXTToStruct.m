@@ -16,6 +16,14 @@ assert(all(allData(:,2)>0),'FORMAT ERROR: IDs must be positive.');
 
 imCoord=1;
 
+% Empty state, still evaluate
+if numLines == 0
+    stInfo.W(range(end),1) = 0;
+    stInfo.H(range(end),1) = 0;
+    stInfo.Xi(range(end),1) = 0;
+    stInfo.Yi(range(end),1) = 0;
+end
+
 % go through all lines
 for l=1:numLines
    

@@ -86,7 +86,7 @@ metrics(4)=Ngt;                 % GT Trajectories
 
 additionalInfo=[];
 % nothing to be done, if state is empty
-if ~N, return; end
+% if ~N, return; end
 
 % Slower Matlab loop
 % [mme, c, fp, m, g, d, ious, alltracked, allfalsepos, M] = clearMOTLoopMatlab(gtInfo, stateInfo, options);
@@ -119,6 +119,7 @@ MOTAL=(1-((sum(m)+sum(fp)+log10(sum(mme)+1))/sum(g)))*100;
 MOTA=(1-((sum(m)+sum(fp)+(sum(mme)))/sum(g)))*100;
 recall=sum(c)/sum(g)*100;
 precision=sum(c)/(sum(fp)+sum(c))*100;
+if isnan(precision), precision=0; end % force to 0 if no matches found
 FAR=sum(fp)/Fgt;
  
 
