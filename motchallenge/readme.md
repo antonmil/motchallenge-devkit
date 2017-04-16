@@ -3,7 +3,7 @@ Multiple Object Tracking Challenge
 ---- http://motchallenge.net -----
 ----------------------------------
 
-Version 1.1
+Version 1.2
 
 This development kit provides scripts to evaluate tracking results.
 Please report bugs to anton.milan@adelaide.edu.au
@@ -112,6 +112,10 @@ Sequence lists for different benchmarks
 
 Version history
 ===============
+1.2 - Apr 16, 2017
+	- Included evaluation for detections
+	- Made evaluation script more efficient	
+
 1.1.1 - Oct 10, 2016
   - Included camera projections scripts
 	
