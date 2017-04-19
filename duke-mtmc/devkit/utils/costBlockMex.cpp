@@ -168,8 +168,8 @@ void mexFunction(int nlhs, mxArray *plhs[],
 		for (int j = 0; j < numPred; j++) {
 
 			const int  *dim1, *dim2;
-			dim1 = mxGetDimensions(mxGetCell(prhs[0], i));
-			dim2 = mxGetDimensions(mxGetCell(prhs[1], j));
+			dim1 = (int*)mxGetDimensions(mxGetCell(prhs[0], i));
+			dim2 = (int*)mxGetDimensions(mxGetCell(prhs[1], j));
 			double* tr1 = mxGetPr(mxGetCell(prhs[0],i));
 			double* tr2 = mxGetPr(mxGetCell(prhs[1],j));
 			int ind = j*numGT+ i;

@@ -2,8 +2,8 @@
 #include "mex.h"
 #include <cmath>
 #include <omp.h>
-#define min(a,b) ((a) < (b) ? (a) : (b))
-#define max(a,b) ((a) > (b) ? (a) : (b))
+#define cmin(a,b) ((a) < (b) ? (a) : (b))
+#define cmax(a,b) ((a) > (b) ? (a) : (b))
 
 #include <set>
 #include <map>
@@ -29,20 +29,20 @@ double boxiou(double l1, double t1, double w1, double h1, double l2, double t2, 
 	double area1 = w1 * h1;
 	double area2 = w2 * h2;
 
-	double x_overlap = max(0, min(l1 + w1, l2 + w2) - max(l1, l2));
-	double y_overlap = max(0, min(t1 + h1, t2 + h2) - max(t1, t2));
+	double x_overlap = cmax(0, cmin(l1 + w1, l2 + w2) - cmax(l1, l2));
+	double y_overlap = cmax(0, cmin(t1 + h1, t2 + h2) - cmax(t1, t2));
 	double intersectionArea = x_overlap*y_overlap;
 	double unionArea = area1 + area2 - intersectionArea;
 	double iou = intersectionArea / unionArea;
 	return iou;
 }
 
-// Min cost bipartite matching via shortest augmenting paths
+// cmin cost bipartite matching via shortest augmenting paths
 //
 // Code from https://github.com/jaehyunp/
 //
 // This is an O(n^3) implementation of a shortest augmenting path
-// algorithm for finding min cost perfect matchings in dense
+// algorithm for finding cmin cost perfect matchings in dense
 // graphs.  In practice, it solves 1000x1000 problems in around 1
 // second.
 //
@@ -51,7 +51,7 @@ double boxiou(double l1, double t1, double w1, double h1, double l2, double t2, 
 //   Rmate[j] = index of left node that right node j pairs with
 //
 // The values in cost[i][j] may be positive or negative.  To perform
-// maximization, simply negate the cost[][] matrix.
+// cmaximization, simply negate the cost[][] matrix.
 
 
 
@@ -59,7 +59,7 @@ typedef vector<double> VD;
 typedef vector<VD> VVD;
 typedef vector<int> VI;
 
-double MinCostMatching(const VVD &cost, VI &Lmate, VI &Rmate) {
+double cminCostMatching(const VVD &cost, VI &Lmate, VI &Rmate) {
 	int n = int(cost.size());
 
 	// construct dual feasible solution
@@ -67,11 +67,11 @@ double MinCostMatching(const VVD &cost, VI &Lmate, VI &Rmate) {
 	VD v(n);
 	for (int i = 0; i < n; i++) {
 		u[i] = cost[i][0];
-		for (int j = 1; j < n; j++) u[i] = min(u[i], cost[i][j]);
+		for (int j = 1; j < n; j++) u[i] = cmin(u[i], cost[i][j]);
 	}
 	for (int j = 0; j < n; j++) {
 		v[j] = cost[0][j] - u[0];
-		for (int i = 1; i < n; i++) v[j] = min(v[j], cost[i][j] - u[i]);
+		for (int i = 1; i < n; i++) v[j] = cmin(v[j], cost[i][j] - u[i]);
 	}
 
 	// construct primal solution satisfying complementary slackness
@@ -118,7 +118,7 @@ double MinCostMatching(const VVD &cost, VI &Lmate, VI &Rmate) {
 			}
 			seen[j] = 1;
 
-			// termination condition
+			// tercmination condition
 			if (Rmate[j] == -1) break;
 
 			// relax neighbors
@@ -192,8 +192,8 @@ void mexFunction(int nlhs, mxArray *plhs[],
 	bool world = (bool)mxGetScalar(prhs[3]);
 
 	const int  *dimGT, *dimST;
-	dimGT = mxGetDimensions(mxGetField(prhs[0], 0, "Xi"));
-	dimST = mxGetDimensions(mxGetField(prhs[1], 0, "Xi"));
+	dimGT = (int*)mxGetDimensions(mxGetField(prhs[0], 0, "Xi"));
+	dimST = (int*)mxGetDimensions(mxGetField(prhs[1], 0, "Xi"));
 	int Fgt = dimGT[0], Ngt = dimGT[1], F = dimST[0], N = dimST[1];
 
 	plhs[0] = mxCreateDoubleMatrix(1, F, mxREAL);
@@ -310,7 +310,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
 		sort(findm.begin(), findm.end());
 		set_difference(stindt.begin(), stindt.end(), findm.begin(), findm.end(), inserter(unmappedEs, unmappedEs.end()));
 
-		int squareSize = max(unmappedGt.size(), unmappedEs.size());
+		int squareSize = cmax(unmappedGt.size(), unmappedEs.size());
 		vector<vector<double>> alldist(squareSize, vector<double>(squareSize, INF));
 
 		for (int i = 0; i < unmappedGt.size(); i++)
@@ -349,7 +349,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
 		}
 
 		vector<int> Lmate, Rmate;
-		MinCostMatching(alldist, Lmate, Rmate);
+		cminCostMatching(alldist, Lmate, Rmate);
 
 		for (int k = 0; k < Lmate.size(); k++) {
 			if (alldist[k][Lmate[k]] == INF) continue;
