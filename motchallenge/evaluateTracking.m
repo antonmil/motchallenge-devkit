@@ -124,8 +124,8 @@ for s=allSeq
     end
     
     % if MOT16, preprocess (clean)
-    if ~isempty(strfind(seqName,'MOT16'))
-	resFile = preprocessResult(resFile, seqName, dataDir);
+    if cleanRequired(seqName)
+        resFile = preprocessResult(resFile, seqName, dataDir);
     end
 
     
@@ -177,7 +177,7 @@ for s=allSeq
     end
     
     % get result for one sequence only
-    [mets, mInf]=CLEAR_MOT_HUN(gtInfoSingle(seqCnt).gtInfo,stI);
+    [mets, mInf, addInf]=CLEAR_MOT_HUN(gtInfoSingle(seqCnt).gtInfo,stI);
     
     threshold = 0.5;
     world = ~imCoord;
@@ -186,6 +186,7 @@ for s=allSeq
    
     allMets(mcnt).mets2d(seqCnt).name=seqName;
     allMets(mcnt).mets2d(seqCnt).m=mets;
+    allMets(mcnt).mets2d(seqCnt).additionalInfo=addInf;
     
     allMets(mcnt).mets3d(seqCnt).name=seqName;
     allMets(mcnt).mets3d(seqCnt).m=zeros(1,length(mets));
@@ -200,13 +201,14 @@ for s=allSeq
     % if world coordinates available, evaluate in 3D
     if  gtInfoSingle(seqCnt).wc &&  worldCoordST
         evopt.eval3d=1;evopt.td=1;
-        [mets, mInf]=CLEAR_MOT_HUN(gtInfoSingle(seqCnt).gtInfo,stI,evopt);
+        [mets, mInf, addInf]=CLEAR_MOT_HUN(gtInfoSingle(seqCnt).gtInfo,stI,evopt);
         world = true;
         metsID = IDmeasures(predMat{seqCnt}, gtMat{seqCnt}, threshold, world);
         mets = [metsID.IDF1, metsID.IDP, metsID.IDR, mets];
 
         
         allMets(mcnt).mets3d(seqCnt).m=mets;
+        allMets(mcnt).mets3d(seqCnt).additionalInfo=addInf;
                 
         fprintf('*** 3D (in world coordinates) ***\n'); printMetrics(mets); fprintf('\n');            
     else
@@ -251,9 +253,52 @@ if eval2D
     fprintf('\n');
     fprintf(' ********************* Your Benchmark Results (2D) ***********************\n');
 
-    [m2d, mInf]=CLEAR_MOT_HUN(gtInfo,stInfo);
+%     [m2d, mInf]=CLEAR_MOT_HUN(gtInfo,stInfo);
+
+    % It is faster to aggregate scores from all cameras than to re-evaluate
+    MT = 0; PT = 0; ML = 0; FRA = 0;
+    falsepositives = 0; missed = 0; idswitches = 0;
+    Fgt = 0; iousum = 0; Ngt = 0; sumg = 0;
+    Nc = 0;
+    numGT = 0; numPRED = 0; IDTP = 0; IDFP = 0; IDFN = 0;
+    
+    for seqCnt = 1:length(allSeq)
+        
+        %     numGT = numGT + allMets(mcnt).mets2d(seqCnt).additionalInfo.IDmeasures.numGT;
+        %     numPRED = numPRED + allMets(mcnt).mets2d(seqCnt).additionalInfo.IDmeasures.numPRED;
+        %     IDTP = IDTP + allMets(mcnt).mets2d(seqCnt).additionalInfo.IDmeasures.IDTP;
+        %     IDFN = IDFN + allMets(mcnt).mets2d(seqCnt).additionalInfo.IDmeasures.IDFN;
+        %     IDFP = IDFP + allMets(mcnt).mets2d(seqCnt).additionalInfo.IDmeasures.IDFP;
+        
+        MT = MT + allMets(mcnt).mets2d(seqCnt).additionalInfo.MT;
+        PT = PT + allMets(mcnt).mets2d(seqCnt).additionalInfo.PT;
+        ML = ML + allMets(mcnt).mets2d(seqCnt).additionalInfo.ML;
+        FRA = FRA + allMets(mcnt).mets2d(seqCnt).additionalInfo.FRA;
+        Fgt = Fgt + allMets(mcnt).mets2d(seqCnt).additionalInfo.Fgt;
+        Ngt = Ngt + allMets(mcnt).mets2d(seqCnt).additionalInfo.Ngt;
+        Nc = Nc + sum(allMets(mcnt).mets2d(seqCnt).additionalInfo.c);
+        sumg = sumg + sum(allMets(mcnt).mets2d(seqCnt).additionalInfo.g);
+        falsepositives = falsepositives + sum(allMets(mcnt).mets2d(seqCnt).additionalInfo.fp);
+        missed = missed + sum(allMets(mcnt).mets2d(seqCnt).additionalInfo.m);
+        idswitches = idswitches + sum(allMets(mcnt).mets2d(seqCnt).additionalInfo.mme);
+        ious = allMets(mcnt).mets2d(seqCnt).additionalInfo.ious;
+        td = allMets(mcnt).mets2d(seqCnt).additionalInfo.td;
+        iousum = iousum + sum(ious(ious>=td & ious<Inf));
+    end
+    
+    FAR = falsepositives / Fgt;
+    MOTP=iousum/Nc * 100; % avg ol
+    if isnan(MOTP), MOTP=0; end % force to 0 if no matches found
+    MOTAL=(1-(missed+falsepositives+log10(idswitches+1))/sumg)*100;
+    MOTA=(1-(missed+falsepositives+idswitches)/sumg)*100;
+    recall=Nc/sumg*100;
+    precision=Nc/(falsepositives+Nc)*100;
+    
+    mets=[recall, precision, FAR, Ngt, MT, PT, ML, falsepositives, missed, idswitches, FRA, MOTA, MOTP, MOTAL];
+    
+    
     metsID = IDmeasures(predMatAll, gtMatAll, 0.5, false);
-    m2d = [metsID.IDF1, metsID.IDP, metsID.IDR, m2d];
+    m2d = [metsID.IDF1, metsID.IDP, metsID.IDR, mets];
 
     allMets.bmark2d=m2d;
     

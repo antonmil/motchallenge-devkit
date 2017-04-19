@@ -1,4 +1,4 @@
-function [metrics metricsInfo additionalInfo]=CLEAR_MOT_HUN(gtInfo,stateInfo,options)
+function [metrics, metricsInfo, additionalInfo]=CLEAR_MOT_HUN(gtInfo,stateInfo,options)
 % compute CLEAR MOT and other metrics
 %
 % metrics contains the following
@@ -68,8 +68,8 @@ metricsInfo.names.short = {'Rcll','Prcn','FAR', ...
     'FP', 'FN', 'IDs', 'FM', ...
     'MOTA','MOTP', 'MOTAL'};
 
-metricsInfo.widths.long = [6 9 16 9 14 17 11 15 15 11 14 5 5 8];
-metricsInfo.widths.short = [5 5 5 3 3 3 3 4 4 3 3 5 5 5];
+    metricsInfo.widths.long = [6 9 16 9 14 17 11 15 15 11 14 5 5 8];
+    metricsInfo.widths.short = [5 5 5 4 4 4 4 6 6 5 5 5 5 5];
 
 metricsInfo.format.long = {'.1f','.1f','.2f', ...
     'i','i','i','i', ...
@@ -125,6 +125,7 @@ allfalsepos=zeros(F,N);
 
 for t=1:F
     g(t)=numel(find(gtInd(t,:)));
+%     if ~mod(t,1000), fprintf('.'); end % print every 1000th frame
     
     % mapping for current frame
     if t>1
@@ -136,13 +137,22 @@ for t=1:F
         end
     end
     
+%     GTsNotMapped=find(~M(t,:) & gtInd(t,:));
+%     EsNotMapped=setdiff(find(stInd(t,:)),M(t,:));
+    
+    stIndInT = find(stInd(t,:));
     GTsNotMapped=find(~M(t,:) & gtInd(t,:));
-    EsNotMapped=setdiff(find(stInd(t,:)),M(t,:));
-
+    EsNotMapped=stIndInT;
+    if ~isempty(stIndInT) && any(M(t,:))
+        EsNotMapped=setdiff(stIndInT,M(t,:));
+    end
+    
+    
     % reshape to ensure horizontal vector in empty case
-	EsNotMapped=reshape(EsNotMapped,1,length(EsNotMapped));
-	GTsNotMapped=reshape(GTsNotMapped,1,length(GTsNotMapped));
+    EsNotMapped=reshape(EsNotMapped,1,length(EsNotMapped));
+    GTsNotMapped=reshape(GTsNotMapped,1,length(GTsNotMapped));
 
+	
     if options.eval3d
         alldist=Inf*ones(Ngt,N);
     
@@ -187,32 +197,37 @@ for t=1:F
 %         end
     
     else
-        allisects=zeros(Ngt,N);        maxisect=Inf;
-        
-        for o=GTsNotMapped
-            GT=[gtInfo.X(t,o)-gtInfo.W(t,o)/2 ...
-                gtInfo.Y(t,o)-gtInfo.H(t,o) ...
-                gtInfo.W(t,o) gtInfo.H(t,o) ];
-            for e=EsNotMapped
-                E=[stateInfo.Xi(t,e)-stateInfo.W(t,e)/2 ...
-                    stateInfo.Yi(t,e)-stateInfo.H(t,e) ...
-                    stateInfo.W(t,e) stateInfo.H(t,e) ];
-                allisects(o,e)=boxiou(GT(1),GT(2),GT(3),GT(4),E(1),E(2),E(3),E(4));
+        if ~isempty(GTsNotMapped) && ~isempty(EsNotMapped)
+            allisects=zeros(Ngt,N);        maxisect=Inf;
+
+            for o=GTsNotMapped
+                GT=[gtInfo.X(t,o)-gtInfo.W(t,o)/2 ...
+                    gtInfo.Y(t,o)-gtInfo.H(t,o) ...
+                    gtInfo.W(t,o) gtInfo.H(t,o) ];
+                for e=EsNotMapped
+                    E=[stateInfo.Xi(t,e)-stateInfo.W(t,e)/2 ...
+                        stateInfo.Yi(t,e)-stateInfo.H(t,e) ...
+                        stateInfo.W(t,e) stateInfo.H(t,e) ];
+                    allisects(o,e)=boxiou(GT(1),GT(2),GT(3),GT(4),E(1),E(2),E(3),E(4));
+                end
+            end
+
+
+            tmpai=allisects;
+            tmpai=1-tmpai;
+            tmpai(tmpai>td)=Inf;
+
+            % do Hungarian matching only if there is anything to match
+            if numel(find(~isinf(tmpai)))>0
+                [Mtch,~]=Hungarian(tmpai);
+                [u,v]=find(Mtch);
+
+%                 M=M;
+                for mmm=1:length(u)
+                    M(t,u(mmm))=v(mmm);
+                end
             end
         end
-            
-        
-        tmpai=allisects;
-        tmpai=1-tmpai;
-        tmpai(tmpai>td)=Inf;
-        [Mtch,Cst]=Hungarian(tmpai);
-        [u,v]=find(Mtch);
-        
-        M=M;
-        for mmm=1:length(u)
-            M(t,u(mmm))=v(mmm);
-        end
-        
 %         GTsNotMapped=find(~M(t,:) & gtInd(t,:));
 %         EsNotMapped=setdiff(find(stInd(t,:)),M(t,:));
             
@@ -247,8 +262,17 @@ for t=1:F
     
     
     alltrackers=find(stInd(t,:));
-    mappedtrackers=intersect(M(t,find(M(t,:))),alltrackers);
-    falsepositives=setdiff(alltrackers,mappedtrackers);
+%     mappedtrackers=intersect(M(t,find(M(t,:))),alltrackers);
+%     falsepositives=setdiff(alltrackers,mappedtrackers);
+    mappedtrackers = [];
+    if ~isempty(alltrackers) && any(M(t,curtracked))
+        mappedtrackers=intersect(M(t,curtracked),alltrackers);
+    end
+    
+    falsepositives=alltrackers;
+    if ~isempty(falsepositives) && ~isempty(mappedtrackers) && any(mappedtrackers)
+        falsepositives=setdiff(alltrackers,mappedtrackers);
+    end
     
     alltracked(t,:)=M(t,:);
 %     allfalsepos(t,1:length(falsepositives))=falsepositives;
@@ -298,6 +322,7 @@ if options.eval3d
 else
     MOTP=sum(ious(ious>=td & ious<Inf))/sum(c) * 100; % avg ol
 end
+if isnan(MOTP), MOTP=0; end % force to 0 if no matches found
 
 MOTAL=(1-((sum(m)+sum(fp)+log10(sum(mme)+1))/sum(g)))*100;
 MOTA=(1-((sum(m)+sum(fp)+(sum(mme)))/sum(g)))*100;
@@ -314,14 +339,16 @@ for i=1:Ngt
     gttotallength=numel(find(gtInd(:,i)));
     trlengtha=numel(find(alltracked(gtframes,i)>0));
     if gtlength/gttotallength >= 0.8 && trlengtha/gttotallength < 0.2
-        MTstatsa(i)=3;
+        MTstatsa(i)=3; % ML: Mostly Lost
     elseif t>=find(gtInd(:,i),1,'last') && trlengtha/gttotallength <= 0.8
-        MTstatsa(i)=2;
+        MTstatsa(i)=2; % PT: Partially Tracked
     elseif trlengtha/gttotallength >= 0.8
-        MTstatsa(i)=1;
+        MTstatsa(i)=1; % MT: Mostly Tracked
     end
+%     [i,t,trlengtha/gttotallength]
 end
 % MTstatsa
+% [(1:Ngt);  MTstatsa]
 MT=numel(find(MTstatsa==1));PT=numel(find(MTstatsa==2));ML=numel(find(MTstatsa==3));
 
 %% fragments
@@ -338,6 +365,21 @@ metrics=[recall, precision, FAR, Ngt, MT, PT, ML, falsepositives, missed, idswit
 
 additionalInfo.alltracked=alltracked;
 additionalInfo.allfalsepos=allfalsepos;
+
+additionalInfo.m = m;
+additionalInfo.fp = fp;
+additionalInfo.mme = mme;
+additionalInfo.g = g;
+additionalInfo.c = c;
+additionalInfo.Fgt = Fgt;
+additionalInfo.Ngt = Ngt;
+additionalInfo.ious = ious;
+additionalInfo.td = td;
+additionalInfo.MT = MT;
+additionalInfo.PT = PT;
+additionalInfo.ML = ML;
+additionalInfo.FRA = FRA;
+
 end 
 
 
