@@ -11,12 +11,14 @@ mex devkit/utils/costBlockMex.cpp -outdir devkit/utils COMPFLAGS="/openmp $COMPF
 if ~exist('gt/trainval.mat','file')
     fprintf('Downloading ground truth...\n');
     url = 'http://vision.cs.duke.edu/DukeMTMC/data/ground_truth/trainval.mat';
+    if ~exist('gt','dir'), mkdir('gt'); end
     filename = 'gt/trainval.mat';
     outfilename = websave(filename,url);
 end
 if ~exist('res/baseline.txt','file')
     fprintf('Downloading baseline tracker output...\n');
     url = 'http://vision.cs.duke.edu/DukeMTMC/data/misc/tracker_output.zip';
+    if ~exist('res','dir'), mkdir('res'); end
     filename = 'res/tracker_output.zip';
     outfilename = websave(filename,url);
     unzip(outfilename,'res');
