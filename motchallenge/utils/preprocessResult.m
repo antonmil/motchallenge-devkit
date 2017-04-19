@@ -1,15 +1,45 @@
-function resFileClean = preprocessResult(resFile, seqName, dataDir)
+function resFileClean = preprocessResult(resFile, seqName, dataDir, force, minvis)
 % reads submitted (raw) MOT16 result from .txt
 % and removes all boxes that are associated with ambiguous annotations
 % such as sitting people, cyclists or mannequins.
+% Also removes partially occluded boxes if minvis>0
 
 % resFile='/home/amilan/research/projects/bmtt-dev/code/bae/res/0001/ADL-Rundle-6.txt';
 % seqName = 'MOT16-09';
-assert(~isempty(strfind(seqName, 'MOT16')),'preproccessing should only be done for MOT16')
+assert(cleanRequired(seqName),'preproccessing should only be done for MOT16/17')
+
+if nargin<4, force=1; end
+if nargin<5, minvis=0; end
 
 fprintf('Preprocessing (cleaning) %s...\n',seqName);
 
-%  if nargin<3, dataDir = getDataDir; end
+% if file does not exist, do nothing
+if ~exist(resFile,'file')
+    fprintf('Results file does not exist\n');
+    resFileClean = []; 
+    return;
+end
+
+[p,f,e]=fileparts(resFile);
+cleanDir = [p,filesep,'clean'];
+if ~exist(cleanDir, 'dir'), mkdir(cleanDir); end
+resFileClean = [cleanDir,filesep,f,e];
+
+% if clean file already exists and no need to redo, skip
+if ~force && exist(resFileClean, 'file')
+    fprintf('skipping...\n');
+    return;
+end
+
+% if file empty, just copy it
+tf = dir(resFile);
+if tf.bytes == 0
+    fprintf('Results file empty\n');
+    copyfile(resFile,resFileClean);
+    return;
+end
+
+if nargin<3, dataDir = getDataDir; end
 
 % [seqName, seqFolder, imgFolder, imgExt, F, dirImages] ...
 %     = getSeqInfo(seq, dataDir);
@@ -112,6 +142,34 @@ for t=1:F
                 pause(.01)
             end
         end
+        
+        % if we encounter a partially occluded box, mark to remove
+        if gtRaw(g,9)<minvis
+            r = resInFrame(mRes(m)); % result box
+            keepBoxes(r) = false;
+            
+            if showVis
+                bxgt=gtRaw(g,3); bygt=gtRaw(g,4); bwgt=gtRaw(g,5); bhgt=gtRaw(g,6); idgt=gtRaw(g,2);
+                bxres=resRaw(r,3); byres=resRaw(r,4); bwres=resRaw(r,5); bhres=resRaw(r,6); idres=resRaw(r,2);
+
+                clf
+                im = imread(fullfile(dataDir,seqName,'img1',sprintf('%06d.jpg',t)));
+                imshow(im); hold on
+                text(50,50,sprintf('%d',t),'color','w')
+                
+                % show GT box
+                text(bxgt+50,bygt-20,sprintf('vis %.1f',gtRaw(g,9)*100),'color','w')     
+                rectangle('Position',[bxgt,bygt,bwgt,bhgt],'EdgeColor','w');
+                
+                % show Res box
+%                 text(bxres,byres-20,sprintf('%d',idres),'color','y')
+                rectangle('Position',[bxres,byres,bwres,bhres],'EdgeColor','y');
+                
+                pause(.01)
+                pause
+            end
+        end        
+        
     end
 end
 
@@ -120,11 +178,7 @@ fprintf('\nRemoving %d boxes from solution...\n',numel(find(~keepBoxes)));
 resNew = resRaw;
 resNew=resNew(keepBoxes,:);
 
-%% leave original copy in a separate dir (preclean) if not already there
-[p,f,e]=fileparts(resFile);
-cleanDir = [p,filesep,'clean'];
-if ~exist(cleanDir, 'dir'), mkdir(cleanDir); end
-resFileClean = [cleanDir,filesep,f,e];
+%% write new file into new dir (clean)
 dlmwrite(resFileClean, resNew);
 
 
