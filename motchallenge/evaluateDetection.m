@@ -176,7 +176,7 @@ try
         [gt,dt]=bbGt('evalRes',gt0,dt0);
         [rc,pr,scores,refprcn] = bbGt('compRoc',gt,dt,0,ref);    
         
-        [detMets, detMetsInfo, detMetsAddInfo]=CLEAR_MOD_HUN(gtAllMatrix,detAllMatrix);
+        [detMetsAll, detMetsInfo, detMetsAddInfo]=CLEAR_MOD_HUN(gtAllMatrix,detAllMatrix);
 
         
         AP=mean(refprcn);
@@ -184,7 +184,7 @@ try
         detResults(mcnt).pr=pr;
         detResults(mcnt).ref=refprcn;
         detResults(mcnt).AP=AP;
-        detResults(mcnt).detMets=detMets;
+        detResults(mcnt).detMets=detMetsAll;
 
         
         fprintf('*** Dataset: %s ***\n',chlname);         
@@ -199,7 +199,7 @@ try
         end
         fprintf('\n');
         fprintf('Average Precision: %.4f\n',AP);
-        printMetrics(detMets);
+        printMetrics(detMetsAll);
 
         
         fprintf('\n\nHere are the per-sequence evaluations:\n\n');

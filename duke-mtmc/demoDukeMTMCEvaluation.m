@@ -32,8 +32,8 @@ trackerOutput = dlmread('res/baseline.txt');
 
 world = false; % Image plane
 iou_threshold = 0.5;
-% testSets = {'trainval'}; 
-testSets = {'trainval_mini'}; 
+testSets = {'trainval'}; 
+% testSets = {'trainval_mini'}; 
 
 
 % Evaluate

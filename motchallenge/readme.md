@@ -26,7 +26,7 @@ training set of the '2015 MOT 2DMark', start MATLAB, cd into devkit
 directory and run
 
 	benchmarkDir = '../data/2DMOT2015/train/';
-	allMets = evaluateTracking('c2-train.txt', 'res/data/', benchmarkDir);
+	allMets = evaluateTracking('c2-train.txt', 'res/MOT15/data/', benchmarkDir);
 
 Replace the value for benchmarkDir accordingly.
 
@@ -64,6 +64,15 @@ Evaluating ...
  45.3  71.7  1.30|500  81 161 258| 7129 21842  220  338|  26.8  72.4  27.4 
 
 
+
+Detector
+========
+
+The evaluation script for the detector works in a similar way. Simply call
+`allMets = evaluateTracking('c9-train.txt', 'res/MOT17Det/DPM/data', benchmarkDir);`
+to get the DPM results.
+ 
+ 
 
 Details
 =======
