@@ -1,0 +1,9 @@
+name
+cam1_easy
+cam2_easy
+cam3_easy
+cam4_easy
+cam5_easy
+cam6_easy
+cam7_easy
+cam8_easy
