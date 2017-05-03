@@ -133,6 +133,20 @@ for ind = 1:length(allSequences)
 
         
     end
+
+    % Sanity check
+    frameIdPairs = resMat{ind}(:,1:2);
+    [u,I,~] = unique(frameIdPairs, 'rows', 'first');
+    hasDuplicates = size(u,1) < size(frameIdPairs,1);
+    if hasDuplicates
+        ixDupRows = setdiff(1:size(frameIdPairs,1), I);
+        dupFrameIdExample = frameIdPairs(ixDupRows(1),:);
+        rows = find(ismember(frameIdPairs, dupFrameIdExample, 'rows'));
+        fprintf('Error: Found duplicate ID/Frame pairs in sequence %s. Instance:\n', sequenceName);
+        fprintf('%10.2f', resMat{ind}(rows(1),:)); fprintf('\n');
+        fprintf('%10.2f', resMat{ind}(rows(2),:)); fprintf('\n');
+        assert(~hasDuplicates, 'Aborting due to duplicate ID/Frame pairs');
+    end
     
     % Evaluate sequence
     [metsCLEAR, mInf, additionalInfo] = CLEAR_MOT_HUN(gtMat{ind}, resMat{ind}, threshold, world);
