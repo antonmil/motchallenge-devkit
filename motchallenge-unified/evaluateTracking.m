@@ -157,6 +157,8 @@ for ind = 1:length(allSequences)
     allMets(ind).IDmeasures = metsID;
     allMets(ind).additionalInfo = additionalInfo;
     fprintf('%s\n', sequenceName); printMetrics(mets); fprintf('\n');
+    evalFile = fullfile(resDir, sprintf('eval_%s.txt',sequenceName));
+    dlmwrite(evalFile, mets);
     
 end
 
