@@ -64,6 +64,7 @@ idswitches=sum(mme);
 % assert(isequal(m,m2));
 % assert(isequal(c,c2));
 % assert(isequal(mme,mme2));
+% assert(isempty(find(abs(d-d2)>0.0000001)));
 
 MOTP=(1-sum(sum(d))/sum(c)) * 100; % avg distance to [0,100]
 if world, MOTP = MOTP / threshold; end

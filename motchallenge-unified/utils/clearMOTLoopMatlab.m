@@ -198,7 +198,10 @@ for t=1:F
     
     
 end     
-
+%
+if ~options.eval3d
+    d = max(0,1-ious);
+end
 end
 
 function ret=matched2d(gtInfo,stateInfo,t,map,mID,td)
