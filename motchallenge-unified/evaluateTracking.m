@@ -91,7 +91,7 @@ for ind = 1:length(allSequences)
     if ~multicam
         % MOTX data format
         resFilename = [resDir, sequenceName,  '.txt'];
-        if strcmp(benchmark, 'MOT16')
+        if strcmp(benchmark, 'MOT16') || strcmp(benchmark, 'MOT17') 
             resFilename = preprocessResult(resFilename, sequenceName, gtDataDir);
         end
         

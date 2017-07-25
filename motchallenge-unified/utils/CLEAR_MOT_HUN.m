@@ -52,6 +52,19 @@ missed=sum(m);
 falsepositives=sum(fp);
 idswitches=sum(mme);
 
+% Sanity check
+% gti = convertMatToStruct(gtMat);
+% sti = convertMatToStruct(resMat);
+% options = struct;
+% if world, options.eval3d = true; else, options.eval3d = false; end
+% options.td = threshold;
+% [mme2, c2, fp2, m2, g2, d2, alltracked2, allfalsepos2] = clearMOTLoopMatlab(gti, sti, options);
+% assert(isequal(g,g2));
+% assert(isequal(fp,fp2));
+% assert(isequal(m,m2));
+% assert(isequal(c,c2));
+% assert(isequal(mme,mme2));
+
 MOTP=(1-sum(sum(d))/sum(c)) * 100; % avg distance to [0,100]
 if world, MOTP = MOTP / threshold; end
 if isnan(MOTP), MOTP=0; end % force to 0 if no matches found
