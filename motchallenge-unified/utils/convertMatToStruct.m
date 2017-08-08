@@ -66,13 +66,6 @@ for l=1:numLines
         continue;
     end
     
-    % ignore too large frame numbers
-    if fr>1e4, 
-        continue;
-    end
-    
-    
-    
     
     % bounding box    
     stInfo.W(fr,id) = lineData(5);
