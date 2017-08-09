@@ -5,6 +5,7 @@ stInd=~~stateInfo.W;
 
 [Fgt, Ngt]=size(gtInfo.X);
 [F, N]=size(stateInfo.X);
+F = Fgt;
 
 % mapping
 M=zeros(F,Ngt);

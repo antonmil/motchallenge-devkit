@@ -1,4 +1,4 @@
-function stInfo=convertMatToStruct(allData)
+function stInfo=convertMatToStruct(allData, gtMaxFrame)
 
 numCols=size(allData,2);
 numLines=size(allData,1);
@@ -33,26 +33,9 @@ end
 assert(imCoord || worldCoord, ...
     'FORMAT ERROR: Neither bounding boxes nor world coorsinates defined.');
     
-% are we dealing with MOT16 ground truth?
-% Data is already parsed, so commection out
-% MOT16GT=false;
-% if numCols==9 && ~isempty(strfind(seqFolder,'MOT16'))
-%     MOT16GT=true;
-% end    
-
-
 % go through all lines
 for l=1:numLines
     lineData=allData(l,:);
-    
-    % ignore 0-marked GT
-    if ~lineData(7), 
-        continue; 
-    end
-    
-    % ignore non-pedestrians for MOT16
-%     if MOT16GT && lineData(8)~= 1, continue; end
-
     
     fr = lineData(1);   % frame number
     id = lineData(2);   % target id
@@ -65,8 +48,7 @@ for l=1:numLines
     if fr<1,
         continue;
     end
-    
-    
+
     % bounding box    
     stInfo.W(fr,id) = lineData(5);
     stInfo.H(fr,id) = lineData(6);
@@ -89,14 +71,9 @@ for l=1:numLines
 end
 
 % append empty frames?
-if nargin>1
-    imgFolders = dir(fullfile(seqFolder,filesep,'img*'));
-    imgFolder = fullfile(seqFolder,imgFolders(1).name,filesep);
-    imgExt=getImgExt(seqFolder);
-
-    imgMask=[imgFolder,'*' imgExt];
-    dirImages = dir(imgMask);
-    Fgt=length(dirImages);
+if gtMaxFrame ~= -1
+   
+    Fgt=gtMaxFrame;
     F=size(stInfo.W,1);
     % if stateInfo shorter, pad with zeros
     if F<Fgt
