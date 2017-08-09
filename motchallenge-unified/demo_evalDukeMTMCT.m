@@ -5,7 +5,11 @@ if ~exist('gt/DukeMTMCT/trainval.mat','file')
     if ~exist('gt','dir'), mkdir('gt'); end
     if ~exist('gt/DukeMTMCT','dir'), mkdir('gt/DukeMTMCT'); end
     filename = 'gt/DukeMTMCT/trainval.mat';
-    outfilename = websave(filename,url);
+    if exist('websave','builtin')
+      outfilename = websave(filename,url); % exists from MATLAB 2014b
+    else
+      outfilename = urlwrite(url, filename);
+    end
 end
 if ~exist('res/DukeMTMCT/BIPCC/baseline.txt','file')
     fprintf('Downloading baseline tracker output...\n');
@@ -14,7 +18,11 @@ if ~exist('res/DukeMTMCT/BIPCC/baseline.txt','file')
     if ~exist('res/DukeMTMCT','dir'), mkdir('res/DukeMTMCT'); end
     if ~exist('res/DukeMTMCT/BIPCC','dir'), mkdir('res/DukeMTMCT/BIPCC'); end
     filename = 'res/DukeMTMCT/BIPCC/tracker_output.zip';
-    outfilename = websave(filename,url);
+    if exist('websave','builtin')
+      outfilename = websave(filename,url); % exists from MATLAB 2014b
+    else
+      outfilename = urlwrite(url, filename);
+    end
     unzip(outfilename,'res/DukeMTMCT/BIPCC/');
     delete(filename);
     % Convert to motchallenge format: Frame, ID, left, top, right, bottom,
