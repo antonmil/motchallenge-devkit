@@ -53,8 +53,8 @@ falsepositives=sum(fp);
 idswitches=sum(mme);
 
 % Sanity check
-% gti = convertMatToStruct(gtMat);
-% sti = convertMatToStruct(resMat);
+% gti = convertMatToStruct(gtMat, -1);
+% sti = convertMatToStruct(resMat, Fgt);
 % options = struct;
 % if world, options.eval3d = true; else, options.eval3d = false; end
 % options.td = threshold;
