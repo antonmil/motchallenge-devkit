@@ -1,2 +1,5 @@
 syntax: glob
 data/clean*
+*.orig
+res/*
+evalResults/*
