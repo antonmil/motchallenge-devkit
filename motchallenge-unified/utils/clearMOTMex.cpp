@@ -169,6 +169,8 @@ void mexFunction(int nlhs, mxArray *plhs[],
     double *resMat = mxGetPr(prhs[1]);
 	double threshold = (double)mxGetScalar(prhs[2]);
 	bool world = (bool)mxGetScalar(prhs[3]);
+	bool VERBOSE = (bool)mxGetScalar(prhs[4]);
+
 	int *dimGT, *dimST;
 	dimGT = (int *)mxGetDimensions(prhs[0]);
 	dimST = (int *)mxGetDimensions(prhs[1]);
@@ -286,7 +288,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
 
 					if (matched) {
 						M[t][mappings[k]] = M[t - 1][mappings[k]];
-						//printf("%d: preserve %d\n", t+1, mappings[k]+1);
+						if (VERBOSE) printf("%d: preserve %d\n", t+1, mappings[k]+1);
 					}
 				}
 			}
@@ -304,9 +306,21 @@ void mexFunction(int nlhs, mxArray *plhs[],
 		sort(findm.begin(), findm.end());
 		set_difference(stindt.begin(), stindt.end(), findm.begin(), findm.end(), inserter(unmappedEs, unmappedEs.end()));
 
+        sort(unmappedGt.begin(), unmappedGt.end());
+        
 		int squareSize = max(unmappedGt.size(), unmappedEs.size());
 		vector<vector<double>> alldist(squareSize, vector<double>(squareSize, INF));
 
+		if (VERBOSE)
+		{
+			printf("%d: UnmappedGTs: ", t+1);
+			for (int i = 0; i < unmappedGt.size(); i++) printf("%d, ", unmappedGt[i]+1);
+			printf("\n%d: UnmappedEs: ", t+1);
+			for (int i = 0; i < unmappedEs.size(); i++) printf("%d, ", unmappedEs[i]+1);
+			printf("\n");
+		}
+
+        int uid = 0; // Unique identifier
 		for (int i = 0; i < unmappedGt.size(); i++)
 		{
 			for (int j = 0; j < unmappedEs.size(); j++)
@@ -323,7 +337,13 @@ void mexFunction(int nlhs, mxArray *plhs[],
 					stx = resMat[index(rowres, 6, rowsST)];
 					sty = resMat[index(rowres, 7, rowsST)];
 					double dist = euclidean(gtx, gty, stx, sty);
-					if (dist <= threshold) alldist[i][j] = dist;
+					if (dist <= threshold) 
+                    {
+                        alldist[i][j] = dist;
+                        // Add unique identifier to break ties
+                        alldist[i][j] += 1e-9 * uid;
+                        uid++;
+                    }
 				}
 				else
 				{
@@ -339,7 +359,13 @@ void mexFunction(int nlhs, mxArray *plhs[],
 					stwidth = resMat[index(rowres, 4, rowsST)];
 					stheight = resMat[index(rowres, 5, rowsST)];
 					double dist = 1 - boxiou(gtleft, gttop, gtwidth, gtheight, stleft, sttop, stwidth, stheight);
-					if (dist <= threshold) alldist[i][j] = dist;
+                    if (dist <= threshold) 
+                    {
+                        alldist[i][j] = dist;
+                        // Add unique identifier to break ties
+                        alldist[i][j] += 1e-9 * uid;
+                        uid++;
+                    }
 				}
 			}
 		}
@@ -350,8 +376,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
 		for (int k = 0; k < Lmate.size(); k++) {
 			if (alldist[k][Lmate[k]] == INF) continue;
 			M[t][unmappedGt[k]] = unmappedEs[Lmate[k]];
-			//printf("%d: map %d with %d\n", t+1, unmappedGt[k]+1, unmappedEs[Lmate[k]]+1);
-
+			if (VERBOSE) printf("%d: map %d with %d\n", t+1, unmappedGt[k]+1, unmappedEs[Lmate[k]]+1);
 		}
 
 		vector<int> curtracked, alltrackers, mappedtrackers, falsepositives, set1;

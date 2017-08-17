@@ -61,7 +61,10 @@ for i = 1:length(ground_truth)
 end
 
 % Solve truth-to-result identity matching 
-[assignment, ~] = assignmentoptimal(cost);
+[optimalMatch, totalCost] = MinCostMatching(cost);
+for i = 1:size(optimalMatch,1)
+   assignment(i) = find(optimalMatch(i,:)); 
+end
 
 % For visualization
 % solutionMatrix = zeros(size(cost));

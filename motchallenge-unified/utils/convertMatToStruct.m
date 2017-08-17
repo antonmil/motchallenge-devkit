@@ -34,7 +34,7 @@ assert(imCoord || worldCoord, ...
     'FORMAT ERROR: Neither bounding boxes nor world coorsinates defined.');
     
 % go through all lines
-for l=1:numLines
+for l=numLines:-1:1
     lineData=allData(l,:);
     
     fr = lineData(1);   % frame number
@@ -57,8 +57,8 @@ for l=1:numLines
     
     % consider 3D coordinates
     if worldCoord
-        stInfo.Xgp(fr,id) = lineData(8);
-        stInfo.Ygp(fr,id) = lineData(9);
+        stInfo.Xgp(fr,id) = lineData(7);
+        stInfo.Ygp(fr,id) = lineData(8);
         
         % position should not be exactly 0
         if ~stInfo.Xgp(fr,id)
@@ -102,7 +102,7 @@ end
 
 
 % remove empty target IDs
-nzc=~~sum(stInfo.Xi,1);
+nzc=~~sum(abs(stInfo.Xi),1);
 
 if isfield(stInfo,'X')
     stInfo.X=stInfo.X(:,nzc);

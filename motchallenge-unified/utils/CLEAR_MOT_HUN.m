@@ -44,7 +44,8 @@ additionalInfo=[];
 [~, ~, ic2] = unique(resMat(:,2)); resMat(:,2) = ic2;
 
 % Evaluate
-[mme, c, fp, m, g, d, alltracked, allfalsepos] = clearMOTMex(gtMat, resMat, threshold, world);
+VERBOSE = false;
+[mme, c, fp, m, g, d, alltracked, allfalsepos] = clearMOTMex(gtMat, resMat, threshold, world, VERBOSE);
 Fgt = max(gtMat(:,1)); % Assumes first gt frame is 1
 Ngt = length(unique(gtMat(:,2)));
 F = max(resMat(:,1));
@@ -58,13 +59,14 @@ idswitches=sum(mme);
 % options = struct;
 % if world, options.eval3d = true; else, options.eval3d = false; end
 % options.td = threshold;
+% options.VERBOSE = VERBOSE;
 % [mme2, c2, fp2, m2, g2, d2, alltracked2, allfalsepos2] = clearMOTLoopMatlab(gti, sti, options);
-% assert(isequal(g,g2));
-% assert(isequal(fp,fp2));
-% assert(isequal(m,m2));
-% assert(isequal(c,c2));
-% assert(isequal(mme,mme2));
-% assert(isempty(find(abs(d-d2)>0.0000001)));
+% assert(isequal(g,g2),'cpp vs matlab: GT discrepancy');
+% assert(isequal(fp,fp2),'cpp vs matlab: FP discrepancy');
+% assert(isequal(m,m2), 'cpp vs matlab: FN discrepancy');
+% assert(isequal(c,c2), 'cpp vs matlab: TP discrepancy');
+% assert(isequal(mme,mme2), 'cpp vs matlab: IDS discrepancy');
+% assert(isempty(find(abs(d-d2)>1e-6)), 'cpp vs matlab: Dist discrepancy');
 
 MOTP=(1-sum(sum(d))/sum(c)) * 100; % avg distance to [0,100]
 if world, MOTP = MOTP / threshold; end

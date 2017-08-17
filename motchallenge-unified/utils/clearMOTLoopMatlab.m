@@ -37,7 +37,9 @@ for t=1:F
         for map=mappings
             if gtInd(t,map) && stInd(t,M(t-1,map)) && matched(gtInfo,stateInfo,t,map,M(t-1,map),td)
                 M(t,map)=M(t-1,map);
-                %fprintf('%d: preserve %d\n', t, map);
+                if options.VERBOSE
+                    fprintf('%d: preserve %d\n', t, map);
+                end
             end
         end
     end
@@ -52,23 +54,38 @@ for t=1:F
     if options.eval3d
         alldist=Inf*ones(Ngt,N);
     
-        mindist=0;
+        uid = 0; % unique identifier to break ties
         for o=GTsNotMapped
             GT=[gtInfo.Xgp(t,o) gtInfo.Ygp(t,o)];
             for e=EsNotMapped
                 E=[stateInfo.Xgp(t,e) stateInfo.Ygp(t,e)];
                 alldist(o,e)=norm(GT-E);
+                if alldist(o,e) > td
+                    alldist(o,e) = 1e8;
+                else
+                    alldist(o,e) = alldist(o,e) + 1e-9 * uid;
+                    uid = uid + 1;
+                end
             end
         end
-            
         
-        tmpai=alldist;        
-        tmpai(tmpai>td)=Inf;
-        [Mtch,Cst]=Hungarian(tmpai);
+        tmpai = alldist;
+        tmpai_compact = tmpai(GTsNotMapped, EsNotMapped);
+        [Mtch,Cst]=MinCostMatching(tmpai_compact);
         [u,v]=find(Mtch);
+        [u, iu] = sort(u);
+        v = v(iu);
+        u = GTsNotMapped(u);
+        v = EsNotMapped(v);
         
         for mmm=1:length(u)
+            if tmpai(u(mmm),v(mmm)) == 1e8
+                continue;
+            end
             M(t,u(mmm))=v(mmm);
+            if options.VERBOSE
+                fprintf('%d: map %d with %d\n', t, u(mmm), v(mmm));
+            end
         end
         
         
@@ -93,8 +110,9 @@ for t=1:F
 %         end
     
     else
-        allisects=zeros(Ngt,N);        maxisect=Inf;
-        
+        allisects=zeros(Ngt,N);        
+        tmpai = Inf * ones(size(allisects));
+        uid = 0;
         for o=GTsNotMapped
             GT=[gtInfo.X(t,o)-gtInfo.W(t,o)/2 ...
                 gtInfo.Y(t,o)-gtInfo.H(t,o) ...
@@ -103,25 +121,45 @@ for t=1:F
                 E=[stateInfo.Xi(t,e)-stateInfo.W(t,e)/2 ...
                     stateInfo.Yi(t,e)-stateInfo.H(t,e) ...
                     stateInfo.W(t,e) stateInfo.H(t,e) ];
-                allisects(o,e)=boxiou(GT(1),GT(2),GT(3),GT(4),E(1),E(2),E(3),E(4));
+                allisects(o,e)= boxiou(GT(1),GT(2),GT(3),GT(4),E(1),E(2),E(3),E(4));
+                tmpai(o,e) = 1 - allisects(o,e);
+                if tmpai(o,e) > td
+                    tmpai(o,e) = 1e8; 
+                else
+                    tmpai(o,e) = tmpai(o,e) + 1e-9 * uid;
+                    uid = uid + 1;
+                end
             end
         end
+        
+        if options.VERBOSE
+            fprintf('%d: UnmappedGTs: ', t);
+            for i = 1:length(GTsNotMapped)
+                fprintf('%d, ', GTsNotMapped(i));
+            end
+            fprintf('\n%d: UnmappedEs: ', t);
+            for i = 1:length(EsNotMapped)
+                fprintf('%d, ', EsNotMapped(i));
+            end
+            fprintf('\n');
+        end
             
-        
-        tmpai=allisects;
-        tmpai=1-tmpai;
-%         tmpai(tmpai>td)=Inf;
-        tmpai(tmpai>td) = 1e8; 
-        [Mtch,Cst]=Hungarian(tmpai);
+        tmpai_compact = tmpai(GTsNotMapped, EsNotMapped);
+        [Mtch,Cst]=MinCostMatching(tmpai_compact);
         [u,v]=find(Mtch);
-        
-        M=M;
+        [u, iu] = sort(u);
+        v = v(iu);
+        u = GTsNotMapped(u);
+        v = EsNotMapped(v);
+
         for mmm=1:length(u)
             if tmpai(u(mmm),v(mmm)) == 1e8
                 continue;
             end
             M(t,u(mmm))=v(mmm);
-            %fprintf('%d: map %d with %d\n', t, u(mmm), v(mmm));
+            if options.VERBOSE
+                fprintf('%d: map %d with %d\n', t, u(mmm), v(mmm));
+            end
         end
         
 %         GTsNotMapped=find(~M(t,:) & gtInd(t,:));
