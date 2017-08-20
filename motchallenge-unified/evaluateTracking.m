@@ -46,7 +46,9 @@ for ind = 1:length(allSequences)
             gtdata(gtdata(:,8)~=1,:) = [];
         end
         
-        gtdata(:,[7 8]) = gtdata(:,[8 9]); % shift world coordinates
+        if strcmp(benchmark, 'MOT15_3D')
+            gtdata(:,[7 8]) = gtdata(:,[8 9]); % shift world coordinates
+        end
         [~, ~, ic] = unique(gtdata(:,2)); % normalize IDs
         gtdata(:,2) = ic;
         gtMat{ind} = gtdata;

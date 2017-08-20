@@ -55,6 +55,19 @@ for l=numLines:-1:1
     stInfo.Xi(fr,id) = lineData(3) + stInfo.W(fr,id)/2;
     stInfo.Yi(fr,id) = lineData(4) + stInfo.H(fr,id);
     
+    % values should not be exactly 0
+    if ~stInfo.W(fr,id)
+        stInfo.W(fr,id) = stInfo.W(fr,id) + 0.0001;
+    end
+    if ~stInfo.H(fr,id)
+        stInfo.H(fr,id) = stInfo.H(fr,id) + 0.0001;
+    end
+    if ~stInfo.Xi(fr,id)
+        stInfo.Xi(fr,id) = stInfo.Xi(fr,id) + 0.0001;
+    end
+    if ~stInfo.Yi(fr,id)
+        stInfo.Yi(fr,id) = stInfo.Yi(fr,id) + 0.0001;
+    end
     % consider 3D coordinates
     if worldCoord
         stInfo.Xgp(fr,id) = lineData(7);
