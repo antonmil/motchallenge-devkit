@@ -11,7 +11,7 @@ if strcmp(benchmark, 'MOT15')
 elseif strcmp(benchmark, 'MOT15_3D')
     world = 1;
     threshold = 1;
-elseif strcmp(benchmark, 'MOT16') 
+elseif strcmp(benchmark, 'MOT16')
 elseif strcmp(benchmark, 'MOT17')
 elseif strcmp(benchmark, 'PETS2017')
 elseif strcmp(benchmark, 'DukeMTMCT')
@@ -93,20 +93,27 @@ for ind = 1:length(allSequences)
     if ~multicam
         % MOTX data format
         resFilename = [resDir, sequenceName,  '.txt'];
-        if strcmp(benchmark, 'MOT16') || strcmp(benchmark, 'MOT17') 
+        if strcmp(benchmark, 'MOT16') || strcmp(benchmark, 'MOT17')
             resFilename = preprocessResult(resFilename, sequenceName, gtDataDir);
         end
         
         % Skip evaluation if output is missing
         if ~exist(resFilename,'file')
-            fprintf('WARNING: result for %s not available!\n',sequenceName);
+            fprintf('ERROR: result for %s not available!\n',sequenceName);
             continue;
         end
         
         % Read result file
-        resdata = dlmread(resFilename);
+        try
+            resdata = dlmread(resFilename);
+        catch
+            fprintf('ERROR: Result file for %s is empty or invalid\n', resFilename);
+            continue;
+        end
         resdata(resdata(:,1)<1,:) = [];      % ignore negative frames
-        resdata(:,[7 8]) = resdata(:,[8 9]);  % shift world coordinates
+        if strcmp(benchmark, 'MOT15_3D')
+            resdata(:,[7 8]) = resdata(:,[8 9]);  % shift world coordinates
+        end
         resdata(resdata(:,1) > max(gtMat{ind}(:,1)),:) = []; % clip result to gtMaxFrame
         resMat{ind} = resdata;
         
@@ -114,9 +121,9 @@ for ind = 1:length(allSequences)
         % Duke data format
         sequenceName = allSequences{ind};
         resFilename = [resDir, sequenceName,  '.txt'];
-        s = dir(resFilename); 
+        s = dir(resFilename);
         if exist(resFilename,'file') && s.bytes ~= 0
-            resdata = dlmread(resFilename); 
+            resdata = dlmread(resFilename);
         else
             resdata = zeros(0,9);
         end
@@ -132,10 +139,10 @@ for ind = 1:length(allSequences)
         resdata(:,1) = resdata(:,1) + startTimes(cam) - testInterval(1); % normalize frames
         resdata = sortrows(resdata,[1 2]);
         resMat{ind} = resdata;
-
+        
         
     end
-
+    
     % Sanity check
     frameIdPairs = resMat{ind}(:,1:2);
     [u,I,~] = unique(frameIdPairs, 'rows', 'first');
@@ -174,7 +181,7 @@ dlmwrite(evalFile, metsBenchmark);
 
 % Multicam scores
 if multicam
-   
+    
     metsMulticam = evaluateMultiCam(gtMat, resMat, threshold, world);
     fprintf('\n');
     fprintf(' ********************* Your %s MultiCam Results *********************\n', benchmark);
@@ -183,7 +190,7 @@ if multicam
     
     evalFile = fullfile(resDir, 'eval_mc.txt');
     dlmwrite(evalFile, metsMulticam);
-
+    
 end
 
 
