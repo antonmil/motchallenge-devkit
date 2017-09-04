@@ -1,4 +1,4 @@
-function allMets = evaluateTracking(seqmap, resDir, gtDataDir, benchmark)
+function [allMets, metsBenchmark, metsMultiCam] = evaluateTracking(seqmap, resDir, gtDataDir, benchmark)
 
 addpath(genpath('.'));
 warning off;
@@ -28,6 +28,9 @@ resMat = [];
 
 % Evaluate sequences individually
 allMets = [];
+metsBenchmark = [];
+metsMultiCam = [];
+
 for ind = 1:length(allSequences)
     
     % Parse ground truth
@@ -99,16 +102,14 @@ for ind = 1:length(allSequences)
         
         % Skip evaluation if output is missing
         if ~exist(resFilename,'file')
-            fprintf('ERROR: result for %s not available!\n',sequenceName);
-            continue;
+            error('Invalid submission. Result for sequence %s not available!\n',sequenceName);
         end
         
         % Read result file
         try
             resdata = dlmread(resFilename);
         catch
-            fprintf('ERROR: Result file for %s is empty or invalid\n', resFilename);
-            continue;
+            error('Invalid submission. Result file for sequence %s is empty or invalid\n', resFilename);
         end
         resdata(resdata(:,1)<1,:) = [];      % ignore negative frames
         if strcmp(benchmark, 'MOT15_3D')
@@ -151,10 +152,11 @@ for ind = 1:length(allSequences)
         ixDupRows = setdiff(1:size(frameIdPairs,1), I);
         dupFrameIdExample = frameIdPairs(ixDupRows(1),:);
         rows = find(ismember(frameIdPairs, dupFrameIdExample, 'rows'));
-        fprintf('Error: Found duplicate ID/Frame pairs in sequence %s. Instance:\n', sequenceName);
-        fprintf('%10.2f', resMat{ind}(rows(1),:)); fprintf('\n');
-        fprintf('%10.2f', resMat{ind}(rows(2),:)); fprintf('\n');
-        assert(~hasDuplicates, 'Aborting due to duplicate ID/Frame pairs');
+        
+        errorMessage = sprintf('Invalid submission: Found duplicate ID/Frame pairs in sequence %s.\nInstance:\n', sequenceName);
+        errorMessage = [errorMessage, sprintf('%10.2f', resMat{ind}(rows(1),:)), sprintf('\n')];
+        errorMessage = [errorMessage, sprintf('%10.2f', resMat{ind}(rows(2),:)), sprintf('\n')];
+        assert(~hasDuplicates, errorMessage);
     end
     
     % Evaluate sequence
@@ -182,19 +184,13 @@ dlmwrite(evalFile, metsBenchmark);
 % Multicam scores
 if multicam
     
-    metsMulticam = evaluateMultiCam(gtMat, resMat, threshold, world);
+    metsMultiCam = evaluateMultiCam(gtMat, resMat, threshold, world);
     fprintf('\n');
     fprintf(' ********************* Your %s MultiCam Results *********************\n', benchmark);
     fprintf('IDF1   IDP    IDR\n');
-    fprintf('%.2f  %.2f  %.2f\n', metsMulticam(1), metsMulticam(2), metsMulticam(3));
+    fprintf('%.2f  %.2f  %.2f\n', metsMultiCam(1), metsMultiCam(2), metsMultiCam(3));
     
     evalFile = fullfile(resDir, 'eval_mc.txt');
-    dlmwrite(evalFile, metsMulticam);
+    dlmwrite(evalFile, metsMultiCam);
     
 end
-
-
-
-
-
-

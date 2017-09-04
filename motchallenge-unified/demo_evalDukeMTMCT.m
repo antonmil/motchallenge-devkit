@@ -44,4 +44,4 @@ if ~exist('res/DukeMTMCT/BIPCC/baseline.txt','file')
 end
 
 %% Evaluation
-allMets = evaluateTracking('DukeMTMCT-trainval-mini.txt', 'res/DukeMTMCT/BIPCC/', 'gt/DukeMTMCT', 'DukeMTMCT');
+[allMets, metsBenchmark, metsMultiCam] = evaluateTracking('DukeMTMCT-trainval-mini.txt', 'res/DukeMTMCT/BIPCC/', 'gt/DukeMTMCT', 'DukeMTMCT');
