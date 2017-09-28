@@ -54,19 +54,19 @@ falsepositives=sum(fp);
 idswitches=sum(mme);
 
 % Sanity check
-% gti = convertMatToStruct(gtMat, -1);
-% sti = convertMatToStruct(resMat, Fgt);
-% options = struct;
-% if world, options.eval3d = true; else, options.eval3d = false; end
-% options.td = threshold;
-% options.VERBOSE = VERBOSE;
-% [mme2, c2, fp2, m2, g2, d2, alltracked2, allfalsepos2] = clearMOTLoopMatlab(gti, sti, options);
-% assert(isequal(g,g2),'cpp vs matlab: GT discrepancy');
-% assert(isequal(fp,fp2),'cpp vs matlab: FP discrepancy');
-% assert(isequal(m,m2), 'cpp vs matlab: FN discrepancy');
-% assert(isequal(c,c2), 'cpp vs matlab: TP discrepancy');
-% assert(isequal(mme,mme2), 'cpp vs matlab: IDS discrepancy');
-% assert(isempty(find(abs(d-d2)>1e-6)), 'cpp vs matlab: Dist discrepancy');
+ gti = convertMatToStruct(gtMat, -1);
+ sti = convertMatToStruct(resMat, Fgt);
+ options = struct;
+ if world, options.eval3d = true; else, options.eval3d = false; end
+ options.td = threshold;
+ options.VERBOSE = VERBOSE;
+ % [mme2, c2, fp2, m2, g2, d2, alltracked2, allfalsepos2] = clearMOTLoopMatlab(gti, sti, options);
+ % assert(isequal(g,g2),'cpp vs matlab: GT discrepancy');
+ % assert(isequal(fp,fp2),'cpp vs matlab: FP discrepancy');
+ % assert(isequal(m,m2), 'cpp vs matlab: FN discrepancy');
+ % assert(isequal(c,c2), 'cpp vs matlab: TP discrepancy');
+ % assert(isequal(mme,mme2), 'cpp vs matlab: IDS discrepancy');
+ % assert(isempty(find(abs(d-d2)>1e-6)), 'cpp vs matlab: Dist discrepancy');
 
 MOTP=(1-sum(sum(d))/sum(c)) * 100; % avg distance to [0,100]
 if world, MOTP = MOTP / threshold; end

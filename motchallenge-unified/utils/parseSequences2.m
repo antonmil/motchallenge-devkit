@@ -1,4 +1,4 @@
-function allseq = parseSequences(seqmapFile)
+function allseq = parseSequences2(seqmapFile)
 % parse sequence map
 % seqmapFile - a file containing the sequence names
 %    to be processed. First line is ignored. e.g.

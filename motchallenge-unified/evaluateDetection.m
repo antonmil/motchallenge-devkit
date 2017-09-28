@@ -16,7 +16,7 @@ addpath(genpath('.'));
 
 % read sequence map
 seqmapFile=fullfile('seqmaps',seqmap);
-allSeq = parseSequences(seqmapFile);
+allSeq = parseSequences2(seqmapFile);
 
 fprintf('Challenge: %s\n',chlname);
 fprintf('Set: %s\n',splitStrLong);
