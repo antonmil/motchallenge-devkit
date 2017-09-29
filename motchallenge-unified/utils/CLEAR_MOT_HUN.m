@@ -54,12 +54,12 @@ falsepositives=sum(fp);
 idswitches=sum(mme);
 
 % Sanity check
- gti = convertMatToStruct(gtMat, -1);
- sti = convertMatToStruct(resMat, Fgt);
- options = struct;
- if world, options.eval3d = true; else, options.eval3d = false; end
- options.td = threshold;
- options.VERBOSE = VERBOSE;
+% gti = convertMatToStruct(gtMat, -1);
+% sti = convertMatToStruct(resMat, Fgt);
+% options = struct;
+% if world, options.eval3d = true; else, options.eval3d = false; end
+% options.td = threshold;
+% options.VERBOSE = VERBOSE;
  % [mme2, c2, fp2, m2, g2, d2, alltracked2, allfalsepos2] = clearMOTLoopMatlab(gti, sti, options);
  % assert(isequal(g,g2),'cpp vs matlab: GT discrepancy');
  % assert(isequal(fp,fp2),'cpp vs matlab: FP discrepancy');
