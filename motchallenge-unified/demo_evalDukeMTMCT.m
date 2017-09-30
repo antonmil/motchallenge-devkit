@@ -28,12 +28,12 @@ if ~exist('res/DukeMTMCT/BIPCC/baseline.txt','file')
     % Convert to motchallenge format: Frame, ID, left, top, right, bottom,
     % worldX, worldY
     output = dlmread('res/DukeMTMCT/BIPCC/baseline.txt');
-    names = {'trainval_mini', 'trainval', 'easy', 'hard'};
+    names = {'trainval_mini', 'trainval', 'test_easy', 'test_hard'};
     testIntervals = {127720:187540, 47720:227540, 263504:356648, 227541:263503};
     startTimes = [5543, 3607, 27244, 31182, 1, 22402, 18968, 46766];
 
     for cam = 1:8
-        for i = 1:4
+        for i = 1:length(names)
             filter = output(:,1)==cam & ismember(output(:,3) + startTimes(cam) - 1, testIntervals{i});
             data = output(filter,:);
             data = data(:,2:end);
