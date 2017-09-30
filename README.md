@@ -1,11 +1,13 @@
-Multiple Object Tracking Challenge Devkit
-=========================================
+Multiple Object Tracking Challenge Development Kit
+==================================================
 
-[MOTChallenge](https://motchallenge.net)
+[MOTChallenge.net](https://motchallenge.net)
 
 ## Authors
+
 	* Anton Milan (anton.milan@adelaide.edu.au)
 	* Ergys Ristani (ristani@cs.duke.edu)
+
 
 Description
 ===========
@@ -14,6 +16,7 @@ Version 1.4
 
 This development kit provides scripts to evaluate detection/tracking results.
 Please report bugs to: 
+
     Anton Milan   - anton.milan@adelaide.edu.au
     Ergys Ristani - ristani@cs.duke.edu
 
@@ -25,6 +28,7 @@ Requirements
 - Benchmark data for MOT15-17
   e.g. 2DMOT2015, available here: http://motchallenge.net/data/2D_MOT_2015/
 
+
 - Note 1: DukeMTMCT benchmark data will download automatically.
 - Note 2: The code has been tested under Windows and Linux.
   
@@ -32,18 +36,19 @@ Requirements
 Usage
 =====
 
-1) Run: compile
+1) Run: 
+       
+       compile
 
 2) Run one of the following:
 
-   demo_evalMOT15
-   demo_evalMOT15_3D
-   demo_evalMOT16
-   demo_evalMOT17Det
-   demo_evalDukeMTMCT
+       demo_evalMOT15
+       demo_evalMOT15_3D
+       demo_evalMOT16
+       demo_evalMOT17Det
+       demo_evalDukeMTMCT
 
-   Note: For demo_evalMOT1X you need to replace the benchmarkGtDir path to 
-         point to the training set data. For example:
+   Note: For demo_evalMOT1X you need to replace the benchmarkGtDir path to point to the training set data. For example:
          
          benchmarkGtDir = '../data/2DMOT2015/train/';
          allMets = evaluateTracking('c2-train.txt', 'res/MOT15/data/', benchmarkGtDir, 'MOT15');
@@ -88,12 +93,11 @@ You should see the following output:
      41.2 53.2 33.6| 45.3  71.7  1.30|500  81 161 258| 7129 21842  220  338| 26.8  72.4  27.4 
 
 
-
 Details
 =======
 The tracking evaluation script accepts 4 arguments:
 
-evaluateTracking(seqmap, resDir, gtDataDir, benchmark)
+    evaluateTracking(seqmap, resDir, gtDataDir, benchmark)
 
 1) seqmap
 sequence map (e.g. `c2-train.txt` contains a list of all sequences to be 
@@ -109,7 +113,7 @@ The folder containing the ground truth files.
 4) benchmark
 The name of the benchmark, e.g. 'MOT15', 'MOT16', 'MOT17', 'DukeMTMCT'
 
-The results will be shown for each individual sequence, as well as for the
+The results will be shown for each individual sequence as well as for the
 entire benchmark. Benchmark scores are aggregate scores for all sequences.
 
 
@@ -141,17 +145,17 @@ Sequence lists for different benchmarks
 Version history
 ===============
 
-1.4 - Sept 30, 2017
-    - Bitbucket release
+1.4 - Sep 30, 2017
+  - Bitbucket release
 
 1.3 - Apr 29, 2017
-    - Merged single- and multi-camera evaluation branches
-    - Code cleanup
-    - Evaluation code ported to C++
+  - Merged single- and multi-camera evaluation branches
+  - Code cleanup
+  - Evaluation code ported to C++
 
 1.2 - Apr 16, 2017
-	- Included evaluation for detections
-	- Made evaluation script more efficient	
+  - Included evaluation for detections
+  - Made evaluation script more efficient	
 
 1.1.1 - Oct 10, 2016
   - Included camera projections scripts
