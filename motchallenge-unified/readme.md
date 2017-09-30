@@ -3,9 +3,9 @@ Multiple Object Tracking Challenge
 ---- http://motchallenge.net -----
 ----------------------------------
 
-Version 1.3
+Version 1.4
 
-This development kit provides scripts to evaluate tracking results.
+This development kit provides scripts to evaluate detection/tracking results.
 Please report bugs to: 
     Anton Milan   - anton.milan@adelaide.edu.au
     Ergys Ristani - ristani@cs.duke.edu
@@ -15,29 +15,33 @@ Requirements
 ============
 - MATLAB
 - C/C++ compiler
-- Benchmark data 
+- Benchmark data for MOT15-17
   e.g. 2DMOT2015, available here: http://motchallenge.net/data/2D_MOT_2015/
-  
+
+- Note 1: DukeMTMCT benchmark data will download automatically.
+- Note 2: The code has been tested under Windows and Linux.
   
 
 Usage
 =====
 
-1) Run compile.
+1) Run: compile
 
-2) See demo_evalMOT15 for an example, or demo_evalDukeMTMCT for both 
-single- and multi-camera evaluation.
+2) Run one of the following:
 
-To compute the evaluation for the 2DMOT2015 demo, which corresponds to 
-the results of the CEM tracker (continuous energy minimization) on the 
-training set of the '2015 MOT 2DMark', start MATLAB and run
+   demo_evalMOT15
+   demo_evalMOT15_3D
+   demo_evalMOT16
+   demo_evalDukeMTMCT
 
-    benchmarkGtDir = '../../data/2DMOT2015/train/';
-    allMets = evaluateTracking('c2-train.txt', 'res/MOT15/data/', benchmarkGtDir, 'MOT15');
+   Note: For demo_evalMOT1X you need to replace the benchmarkGtDir path to 
+         point to the training set data. For example:
+         
+         benchmarkGtDir = '../../data/2DMOT2015/train/';
+         allMets = evaluateTracking('c2-train.txt', 'res/MOT15/data/', benchmarkGtDir, 'MOT15');
 
-Replace the value for benchmarkGtDir accordingly.
 
-You should see the following output (be patient, it may take a minute):
+You should see the following output:
 
 >> demo_evalMOT15
 Sequences: 
@@ -81,22 +85,24 @@ Details
 =======
 The evaluation script accepts 4 arguments:
 
-1)
+evaluateTracking(seqmap, resDir, gtDataDir, benchmark)
+
+1) seqmap
 sequence map (e.g. `c2-train.txt` contains a list of all sequences to be 
 evaluated in a single run. These files are inside the ./seqmaps folder.
 
-2)
+2) resDir
 The folder containing the tracking results. Each one should be saved in a
 separate .txt file with the name of the respective sequence (see ./res/data)
 
-3)
+3) gtDataDir
 The folder containing the ground truth files.
 
-4) 
+4) benchmark
+The name of the benchmark, e.g. 'MOT15', 'MOT16', 'MOT17', 'DukeMTMCT'
 
 The results will be shown for each individual sequence, as well as for the
-entire benchmark.
-
+entire benchmark. Benchmark scores are aggregate scores for all sequences.
 
 
 
@@ -126,6 +132,9 @@ Sequence lists for different benchmarks
 
 Version history
 ===============
+
+1.4 - Sept 30, 2017
+    - Bitbucket release
 
 1.3 - Apr 29, 2017
     - Merged single- and multi-camera evaluation branches

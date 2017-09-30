@@ -1,5 +1,30 @@
 function [allMets, metsBenchmark, metsMultiCam] = evaluateTracking(seqmap, resDir, gtDataDir, benchmark)
 
+% Input:
+% - seqmap
+% Sequence map (e.g. `c2-train.txt` contains a list of all sequences to be 
+% evaluated in a single run. These files are inside the ./seqmaps folder.
+%
+% - resDir
+% The folder containing the tracking results. Each one should be saved in a
+% separate .txt file with the name of the respective sequence (see ./res/data)
+%
+% - gtDataDir
+% The folder containing the ground truth files.
+%
+% - benchmark
+% The name of the benchmark, e.g. 'MOT15', 'MOT16', 'MOT17', 'DukeMTMCT'
+%
+% Output:
+% - allMets
+% Scores for each sequence
+% 
+% - metsBenchmark
+% Aggregate score over all sequences
+%
+% - metsMultiCam
+% Scores for multi-camera evaluation
+
 addpath(genpath('.'));
 warning off;
 
