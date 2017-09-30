@@ -28,7 +28,7 @@ function [allMets, metsBenchmark, metsMultiCam] = evaluateTracking(seqmap, resDi
 addpath(genpath('.'));
 warning off;
 
-% Benchmark specfific properties
+% Benchmark specific properties
 world = 0;
 threshold = 0.5;
 multicam = 0;
@@ -45,7 +45,7 @@ end
 
 % Read sequence list
 sequenceListFile = fullfile('seqmaps',seqmap);
-allSequences = parseSequences(sequenceListFile);
+allSequences = parseSequences2(sequenceListFile);
 fprintf('Sequences: \n');
 disp(allSequences')
 gtMat = [];
