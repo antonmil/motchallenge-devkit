@@ -32,6 +32,7 @@ Usage
    demo_evalMOT15
    demo_evalMOT15_3D
    demo_evalMOT16
+   demo_evalMOT17Det
    demo_evalDukeMTMCT
 
    Note: For demo_evalMOT1X you need to replace the benchmarkGtDir path to 
@@ -83,7 +84,7 @@ Venice-2
 
 Details
 =======
-The evaluation script accepts 4 arguments:
+The tracking evaluation script accepts 4 arguments:
 
 evaluateTracking(seqmap, resDir, gtDataDir, benchmark)
 
