@@ -44,41 +44,41 @@ Usage
 
 You should see the following output:
 
->> demo_evalMOT15
-Sequences: 
-    'TUD-Stadtmitte'
-    'TUD-Campus'
-    'PETS09-S2L1'
-    'ETH-Bahnhof'
-    'ETH-Sunnyday'
-    'ETH-Pedcross2'
-    'ADL-Rundle-6'
-    'ADL-Rundle-8'
-    'KITTI-13'
-    'KITTI-17'
-    'Venice-2'
+    >> demo_evalMOT15
+    Sequences: 
+        'TUD-Stadtmitte'
+        'TUD-Campus'
+        'PETS09-S2L1'
+        'ETH-Bahnhof'
+        'ETH-Sunnyday'
+        'ETH-Pedcross2'
+        'ADL-Rundle-6'
+        'ADL-Rundle-8'
+        'KITTI-13'
+        'KITTI-17'
+        'Venice-2'
 
-	... TUD-Stadtmitte
-TUD-Stadtmitte
- IDF1  IDP  IDR| Rcll  Prcn   FAR| GT  MT  PT  ML|   FP    FN  IDs   FM| MOTA  MOTP MOTAL 
- 64.5 82.0 53.1| 60.9  94.0  0.25| 10   5   4   1|   45   452    7    6| 56.4  65.4  56.9 
+        ... TUD-Stadtmitte
+    TUD-Stadtmitte
+     IDF1  IDP  IDR| Rcll  Prcn   FAR| GT  MT  PT  ML|   FP    FN  IDs   FM| MOTA  MOTP MOTAL 
+     64.5 82.0 53.1| 60.9  94.0  0.25| 10   5   4   1|   45   452    7    6| 56.4  65.4  56.9 
 
-	... TUD-Campus
-TUD-Campus
- IDF1  IDP  IDR| Rcll  Prcn   FAR| GT  MT  PT  ML|   FP    FN  IDs   FM| MOTA  MOTP MOTAL 
- 55.8 73.0 45.1| 58.2  94.1  0.18|  8   1   6   1|   13   150    7    7| 52.6  72.3  54.3 
+        ... TUD-Campus
+    TUD-Campus
+     IDF1  IDP  IDR| Rcll  Prcn   FAR| GT  MT  PT  ML|   FP    FN  IDs   FM| MOTA  MOTP MOTAL 
+     55.8 73.0 45.1| 58.2  94.1  0.18|  8   1   6   1|   13   150    7    7| 52.6  72.3  54.3 
 
-...
+    ...
 
-	... Venice-2
-Venice-2
- IDF1  IDP  IDR| Rcll  Prcn   FAR| GT  MT  PT  ML|   FP    FN  IDs   FM| MOTA  MOTP MOTAL 
- 35.5 43.6 29.9| 42.0  61.3  3.15| 26   4  16   6| 1890  4144   42   52| 14.9  72.6  15.5 
+        ... Venice-2
+    Venice-2
+     IDF1  IDP  IDR| Rcll  Prcn   FAR| GT  MT  PT  ML|   FP    FN  IDs   FM| MOTA  MOTP MOTAL 
+     35.5 43.6 29.9| 42.0  61.3  3.15| 26   4  16   6| 1890  4144   42   52| 14.9  72.6  15.5 
 
 
- ********************* Your 2DMOT15 Results *********************
- IDF1  IDP  IDR| Rcll  Prcn   FAR| GT  MT  PT  ML|   FP    FN  IDs   FM| MOTA  MOTP MOTAL 
- 41.2 53.2 33.6| 45.3  71.7  1.30|500  81 161 258| 7129 21842  220  338| 26.8  72.4  27.4 
+     ********************* Your 2DMOT15 Results *********************
+     IDF1  IDP  IDR| Rcll  Prcn   FAR| GT  MT  PT  ML|   FP    FN  IDs   FM| MOTA  MOTP MOTAL 
+     41.2 53.2 33.6| 45.3  71.7  1.30|500  81 161 258| 7129 21842  220  338| 26.8  72.4  27.4 
 
 
 
