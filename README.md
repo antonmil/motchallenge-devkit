@@ -1,11 +1,14 @@
 Multiple Object Tracking Challenge Devkit
 =========================================
-------- https://motchallenge.net --------
------------------------------------------
+
+[MOTChallenge](https://motchallenge.net)
 
 ## Authors
 	* Anton Milan (anton.milan@adelaide.edu.au)
 	* Ergys Ristani (ristani@cs.duke.edu)
+
+Description
+===========
 
 Version 1.4
 
