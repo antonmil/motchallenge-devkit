@@ -131,10 +131,15 @@ for ind = 1:length(allSequences)
         end
         
         % Read result file
-        try
-            resdata = dlmread(resFilename);
-        catch
-            error('Invalid submission. Result file for sequence %s is empty or invalid\n', resFilename);
+        if exist(resFilename,'file')
+            s = dir(resFilename);
+            if s.bytes ~= 0
+                resdata = dlmread(resFilename);
+            else
+                resdata = zeros(0,9);
+            end
+        else
+            error('Invalid submission. Result file for sequence %s is missing or invalid\n', resFilename);
         end
         resdata(resdata(:,1)<1,:) = [];      % ignore negative frames
         if strcmp(benchmark, 'MOT15_3D')
