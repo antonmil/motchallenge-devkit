@@ -157,42 +157,51 @@ For detector evaluation you should see:
 
 Details
 =======
-The tracking evaluation script accepts 4 arguments:
 
     evaluateTracking(seqmap, resDir, gtDataDir, benchmark)
+    
+The tracking evaluation script accepts 4 arguments:
 
 1) seqmap
+
 sequence map (e.g. `c2-train.txt` contains a list of all sequences to be 
 evaluated in a single run. These files are inside the ./seqmaps folder.
 
 2) resDir
+
 The folder containing the tracking results. Each one should be saved in a
 separate .txt file with the name of the respective sequence (see ./res/data)
 
 3) gtDataDir
+
 The folder containing the ground truth files.
 
 4) benchmark
+
 The name of the benchmark, e.g. 'MOT15', 'MOT16', 'MOT17', 'DukeMTMCT'
 
 The results will be shown for each individual sequence as well as for the
 entire benchmark. Benchmark scores are aggregate scores for all sequences.
 
-
-
-The detection evaluation script accepts 3 arguments:
+&nbsp;
+&nbsp;
 
     evaluateTracking(seqmap, resDir, gtDataDir)
+    
+The detection evaluation script accepts 3 arguments:
 
 1) seqmap
+
 sequence map (e.g. `c9-train.txt` contains a list of all sequences to be 
 evaluated in a single run. These files are inside the ./seqmaps folder.
 
 2) resDir
+
 The folder containing the detection results. Each one should be saved in a
 separate .txt file with the name of the respective sequence (see ./res/data)
 
 3) gtDataDir
+
 The folder containing the ground truth files.
 
 
