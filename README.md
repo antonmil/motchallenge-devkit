@@ -164,7 +164,7 @@ The tracking evaluation script accepts 4 arguments:
 
 1) seqmap
 
-sequence map (e.g. `c2-train.txt` contains a list of all sequences to be 
+sequence map (e.g. `c2-train.txt`) contains a list of all sequences to be 
 evaluated in a single run. These files are inside the ./seqmaps folder.
 
 2) resDir
@@ -192,7 +192,7 @@ The detection evaluation script accepts 3 arguments:
 
 1) seqmap
 
-sequence map (e.g. `c9-train.txt` contains a list of all sequences to be 
+sequence map (e.g. `c9-train.txt`) contains a list of all sequences to be 
 evaluated in a single run. These files are inside the ./seqmaps folder.
 
 2) resDir
