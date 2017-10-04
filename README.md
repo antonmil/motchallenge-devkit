@@ -186,7 +186,7 @@ entire benchmark. Benchmark scores are aggregate scores for all sequences.
 &nbsp;
 &nbsp;
 
-    evaluateTracking(seqmap, resDir, gtDataDir)
+    evaluateDetection(seqmap, resDir, gtDataDir)
     
 The detection evaluation script accepts 3 arguments:
 
