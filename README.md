@@ -23,6 +23,7 @@ Requirements
 
 - Note 1: DukeMTMCT benchmark data will download automatically.
 - Note 2: The code has been tested under Windows and Linux.
+- Note 3: A compatible Python implementation is available at: https://github.com/cheind/py-motmetrics
   
 
 Usage
