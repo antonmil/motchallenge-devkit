@@ -40,6 +40,7 @@ Usage
        demo_evalMOT16
        demo_evalMOT17Det
        demo_evalDukeMTMCT
+       demo_evalCVPR19
 
    Note: For demo_evalMOT1X you need to replace the benchmarkGtDir path to point to the training set data. For example:
          
@@ -179,7 +180,7 @@ The folder containing the ground truth files.
 
 4) benchmark
 
-The name of the benchmark, e.g. 'MOT15', 'MOT16', 'MOT17', 'DukeMTMCT'
+The name of the benchmark, e.g. 'MOT15', 'MOT16', 'MOT17', 'DukeMTMCT', 'CVPR19'
 
 The results will be shown for each individual sequence as well as for the
 entire benchmark. Benchmark scores are aggregate scores for all sequences.
