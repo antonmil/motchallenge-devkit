@@ -27,7 +27,7 @@ function [allMets, metsBenchmark, metsMultiCam] = evaluateTracking(seqmap, resDi
 
 addpath(genpath('.'));
 warning off;
-
+fprintf(benchmark) 
 % Benchmark specific properties
 world = 0;
 threshold = 0.5;
@@ -38,13 +38,16 @@ elseif strcmp(benchmark, 'MOT15_3D')
     threshold = 1;
 elseif strcmp(benchmark, 'MOT16')
 elseif strcmp(benchmark, 'MOT17')
+elseif strcmp(benchmark, 'CVPR19')
 elseif strcmp(benchmark, 'PETS2017')
 elseif strcmp(benchmark, 'DukeMTMCT')
     multicam = 1;
 end
 
+
 % Read sequence list
 sequenceListFile = fullfile('seqmaps',seqmap);
+
 allSequences = parseSequences2(sequenceListFile);
 fprintf('Sequences: \n');
 disp(allSequences')
@@ -70,7 +73,7 @@ for ind = 1:length(allSequences)
         gtdata = dlmread(gtFilename);
         gtdata(gtdata(:,7)==0,:) = [];     % ignore 0-marked GT
         gtdata(gtdata(:,1)<1,:) = [];      % ignore negative frames
-        if strcmp(benchmark, 'MOT16') || strcmp(benchmark, 'MOT17')  % ignore non-pedestrians
+        if strcmp(benchmark, 'MOT16') || strcmp(benchmark, 'MOT17')  || strcmp(benchmark, 'CVPR19') % ignore non-pedestrians
             gtdata(gtdata(:,8)~=1,:) = [];
         end
         
@@ -120,8 +123,9 @@ for ind = 1:length(allSequences)
     % Parse result
     if ~multicam
         % MOTX data format
+     
         resFilename = [resDir, sequenceName,  '.txt'];
-        if strcmp(benchmark, 'MOT16') || strcmp(benchmark, 'MOT17')
+        if strcmp(benchmark, 'MOT16') || strcmp(benchmark, 'MOT17') || strcmp(benchmark, 'CVPR19')
             resFilename = preprocessResult(resFilename, sequenceName, gtDataDir);
         end
         

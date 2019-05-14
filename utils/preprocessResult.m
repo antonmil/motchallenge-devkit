@@ -6,7 +6,7 @@ function resFileClean = preprocessResult(resFile, seqName, dataDir, force, minvi
 
 % resFile='/home/amilan/research/projects/bmtt-dev/code/bae/res/0001/ADL-Rundle-6.txt';
 % seqName = 'MOT16-09';
-assert(cleanRequired(seqName),'preproccessing should only be done for MOT16/17')
+assert(cleanRequired(seqName),'preproccessing should only be done for MOT16/17 and CVPR 19')
 
 if nargin<4, force=1; end
 if nargin<5, minvis=0; end
@@ -63,7 +63,7 @@ gtRaw = dlmread(gtFile);
 assert(size(gtRaw,2)==9, 'unknown GT format')
 
 % define which classes should be ignored
-distractors = {'person_on_vhcl','static_person','distractor','reflection'};
+distractors = {'person_on_vhcl','static_person','distractor','reflection', 'non_mot_vhcl'};
 
 keepBoxes = true(size(resRaw,1),1);
 

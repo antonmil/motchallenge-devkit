@@ -66,7 +66,12 @@ for s=allSeq
         evalMethod=0;
         continue;
     end
-        
+    % set visibility threshold to 25% for cvpr 19 
+    if ~isempty(strfind(seqFolder,'CVPR19'))
+        minvis = 0.25;
+        fprintf('Min Vis changed: \t %s', minvis) ;
+    end
+            
     % if MOT16, preprocess (clean)
     if cleanRequired(seqFolder)
         resFile = preprocessResult(resFile, seqName, dataDir, 1, minvis);
