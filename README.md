@@ -9,7 +9,7 @@ Description
 This development kit provides scripts to evaluate detection/tracking results.
 Please report bugs to the authors: 
 
-    Anton Milan   - anton.milan@adelaide.edu.au
+    Anton Milan   - antmila@amazon.com
     Ergys Ristani - ristani@cs.duke.edu
 
 
