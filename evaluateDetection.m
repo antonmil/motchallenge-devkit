@@ -72,7 +72,7 @@ for s=allSeq
         fprintf('Min Vis changed: \t %s', minvis) ;
     end
             
-    % if MOT16, preprocess (clean)
+    % if MOT16, MOT17 or CVPR19 preprocess (clean)
     if cleanRequired(seqFolder)
         resFile = preprocessResult(resFile, seqName, dataDir, 1, minvis);
     end
