@@ -63,8 +63,12 @@ gtRaw = dlmread(gtFile);
 assert(size(gtRaw,2)==9, 'unknown GT format')
 
 % define which classes should be ignored
-distractors = {'person_on_vhcl','static_person','distractor','reflection', 'non_mot_vhcl'};
+if ~isempty(strfind(seqName,'CVPR19'))
+    distractors = {'person_on_vhcl','static_person','distractor','reflection', 'non_mot_vhcl'};
 
+else 
+    distractors = {'person_on_vhcl','static_person','distractor','reflection'};
+end
 keepBoxes = true(size(resRaw,1),1);
 
 showVis = 0;
